@@ -1,0 +1,5 @@
+# Keep the reproducible FOA implementation, but not local credentials or data.
+/\.foa-git-metadata-backup/
+/api_keys.yaml
+/foa_attack_output/
+/resources/
