@@ -1,0 +1,31 @@
+# Minimal, reproducible runtime for generate_adversarial_samples_foa_attack.py
+#
+# Kaggle already ships a CUDA-enabled PyTorch build. Keep that build instead of
+# reinstalling torch/torchvision from PyPI, which can replace it with a CPU build
+# or consume several GB of disk. Verify the installed pair with the notebook cell
+# documented in the README/guide before running this file.
+
+numpy==1.26.4
+pillow==11.1.0
+
+# Configuration and progress/logging
+hydra-core==1.3.2
+omegaconf==2.3.0
+PyYAML==6.0.2
+tqdm==4.67.1
+wandb==0.19.1
+
+# Imported by the attack entry point (even though seed_everything is not called).
+pytorch-lightning==2.5.0.post0
+torchmetrics==1.6.1
+lightning-utilities==0.11.9
+
+# CLIP surrogate-model loaders
+transformers==4.49.0
+tokenizers==0.21.0
+huggingface-hub==0.28.1
+safetensors==0.5.0
+
+# Base.py calls kmeans(..., iter_limit=100).  PyPI variants may not expose this
+# argument, so install the upstream implementation that does.
+kmeans-pytorch @ git+https://github.com/subhadarship/kmeans_pytorch.git
