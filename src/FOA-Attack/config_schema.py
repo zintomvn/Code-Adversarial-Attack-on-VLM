@@ -72,7 +72,7 @@ class MainConfig:
 @dataclass
 class Ensemble3ModelsConfig(MainConfig):
     data: DataConfig = field(default_factory=lambda: DataConfig(batch_size=1))
-    model: ModelConfig = field(
+    model: ModelConfig = field( 
         default_factory=lambda: ModelConfig(
             use_source_crop=True,
             use_target_crop=True,

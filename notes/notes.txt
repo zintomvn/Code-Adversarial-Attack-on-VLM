@@ -1,0 +1,167 @@
+# reproduce paper FOA
+
+exp protocol
+
+results
+
+
+# Code learning
+- Hydra 
+    + Dùng quản lý config 
+    + Read file .yaml --> create object "config" --> main(config)
+
+Pipeline: 
+    + Input: source image, target image
+    + Output: ASR (counting from success attack / total)
+    + Step-by-step: 
+
+Có thể thay đổi những gì trong vòng lặp - components:
++ Encoder 
++ Loss function
+
+Note - Search ra được những idea sau:
+- Optimal Transport with Structured Data
+- 
+
+
+# Prompt
+Conferences and Journals (tìm paper): 
+- Conferences: CVPR, ICCV, ECCV, IEEE SaTML, NeurIPS, ICLR, ICML, ACM Multimedia, AAAI
+- IEEE S&P / USENIX / CCS / NDSS
+- 
+Keywords: Blackbox adversarial attack, Attack on VLM, Transferability, XAI on Blackbox adversarial attack,  
+
+## Prompt - AI reseacher assistant 
+role: bạn là một AI reseacher assistant;
+context: tôi đang cần đọc hiểu code và hiểu cách hoạt động của paper [https://github.com/jiaxiaojunQAQ/FOA-Attack/tree/main](https://github.com/jiaxiaojunQAQ/FOA-Attack/tree/main)
+contraint: giải thích đủ dễ hiểu không dài dòng, tập trung vào khái niệm, bản chất cách hoạt động, ứng dụng
+
+task: giải thích cho tôi thư viên này
+import hydra;
+
+
+## Prompt Literature review
+role: bạn là một AI researcher assistant
+context: 
+- Xem những paper tôi đã đọc 
+- Những tài liệu tôi đã tham khảo qua: https://github.com/liudaizong/Awesome-LVLM-Attack#Adversarial-Attack
+- repo chạy thực nghiệm của tôi: https://github.com/zintomvn/Attack-on-VLM
+- Tôi cần tìm tài liệu / paper liên quan đến XAI để áp dụng vào làm thực nghiệm trong gap tôi nghiên cứu hiện tại  
+- Problem tôi đang nghiên cứu: Làm sao transfer được model opensource như CLIP và các models liên quan vào các model blackbox để tăng tỷ lệ attack (ASR).
+- Mục đích: tối ưu vòng lặp generate new perturbation dựa vào phần quan trọng của image bằng kỹ thuật trong XAI
+- Kiếm những paper từ năm 2024 đến năm 2026, lấy những paper đang có xu hướng về mảng áp dụng XAI vào trong attack on VLM để tôi tham khảo
+- Những hội nghị uy tín cần lấy là: CVPR, ICCV, ECCV, IEEE SaTML, NeurIPS, ICLR, ICML, ACM Multimedia, AAAI
+- Những journal cần lấy: IEEE S&P / USENIX / CCS / NDSS
+- Keywords: 
+
+task: làm cho tôi bảng tóm tắt về những paper mới có  đó, dẫn link cụ thể để tôi tham khảo
+
+contraint: 
+- Lấy những paper trong hội nghị lớn hoặc journal uy tín liên quan đến XAI và blackbox adversarial attack
+- Không lấy những paper ngoài hay chưa được accept paper
+- Trích dẫn cụ thể nguồn để tôi kiểm tra
+- Không chế thông tin hay bịa thông tin từ paper, lấy thông tin hoàn toàn từ text trong paper
+- Số lượng paper liên quan khoảng 20 papers 
+- Đọc thông tin abstract của paper và dùng nó để làm thông tin suy luận, trích dẫn cụ thể
+- Kiểm tra kỹ xem những kỹ thuật nào người ta chưa làm thì mới lấy paper đó, còn người ta đã làm rồi thì không cần lấy, tôi sẽ lấy những idea đó để chạy test thực nghiệm
+
+verify: Kiểm tra những thứ tôi đã ghi sẵn trong contraint và check lại cho đến khi thỏa
+output: Xuất cho tôi file markdown literature_review_v1.md 
+
+
+## Prompt - Search knowledge 
+role: bạn là một AI researcher assistant
+context: hiện tại tôi đang nghiên cứu blackbox adversarial attack on VLM, cụ thể là nghiên cứu hướng transfer model CLIP vào các model LVLM
+- Những paper tôi đã đọc: AdvDiffVLM, AnyAttack, FOA-Attack, M-Attack, MPCAttack
+- Những hội nghị uy tín - hướng nghiên cứu của tôi: CVPR, ICCV, ECCV, IEEE SaTML, NeurIPS, ICLR, ICML, ACM Multimedia, AAAI
+- Tôi đang nghiên cứu cách ứng dụng XAI vào blackbox adversarial attack
+
+task: 
+- tôi đang cần hiểu có những thành phần nào trong các kỹ thuật attack có thể thay đổi để tăng khả năng tấn công, kiếm và liệt kê cho tôi
+- Dạng kỹ thuật nào được đánh giá cao nhất và dễ được accept paper nhất?
+- Có những hướng nào trong XAI có thể áp dụng được để tăng khả năng transfer trong blackbox adversarial attack 
+
+contraint: 
+- Trích dẫn cụ thể nguồn để tôi kiểm tra
+- Không chế thông tin hay bịa thông tin từ paper, lấy thông tin hoàn toàn từ text trong paper
+- Đọc thông tin abstract và methodology của paper và dùng nó để làm thông tin suy luận không chỉ đọc tóm tắt, trích dẫn cụ thể phần nào dùng trong paper
+- Những công thức toán và cách họ làm thì ký hiệu và dẫn chính xác không sinh từ hay suy luận
+
+
+------------------------------------------------------------------------------------------------------------
+# milestone 4
+## Prompt:
+
+context: 
+- đọc cho tôi code experiment trong repo này: 
+- data tôi đã tải lên kaggle trong https://www.kaggle.com/datasets/zintom/blackbox-adversarial-attack-dataset/data
+
+Tasks - Code:
+- Create baseline to run attack in kaggle x
+- Fix to download images to evaluate on VLM x
+- Run evaluate on VLM: x 
+    + Download model weights
+    + Run creating description (2 images) - Captioning
+    + evaluate with GPT-Scorer
+- Find papers that related to XAI blackbox attack to follow
+- Run feature map importance in source image to clarify the important regions and tokens (image-text)
+
+Những hướng có thể đưa XAI vào:
+    + Grad-CAM
+    + Saliency maps
+    + Concept-neuron methods (concept-aware explanation)
+    + Language rationales
+    + causal interpretation (LVLM-Interpret - CVPR 2024)
+
+
+Ideas - from papers:
+- Fine scales, intermidiate scales, coarse scales and spatial-localized, scale-localized (xem thử cách hoạt động của spatial-frequency importance) (2026 - ICML - Manifold-Aligned Guided)
+- khảo sát phần text trong token ~ token trong image -> spatial reasoning (2025 - ICML - Why Is Spatial Reasoning Hard for VLMs?)
+    + Visualize the text des and attention heat-map (trong ảnh target)
+    + 
+- research white-box trên surrogate model xem drawbacks có ở chỗ nào (2024-ICLR-INViTE, )
+
+
+Note - Insight:
+- Nếu dựa vào image không thì sẽ bias (chỉ biến đổi được transformation) --> không giải thích được tại sao
+- Có những paper trước đó khi người ta làm thì có insights:
+    + Text: Token trong embedding (local - k liên kết với token khác, global - có liên kết cao) là thứ giải thích phần captioning
+    + Image: những patch tokens trong ảnh (cls token hay x_cls) là nguyên nhân model transfer được (align giữa 2 patch tokens của adv image và target image)
+
+- Có những hướng analyze:
+    + Lý do attack yếu:
+        + Feature engineer: tokenize, layer DNN trong ViT 
+        + Modeling (surrogate model): loss, optimize (representation/optimization mechanism) -> này áp dụng mấy techniques bên whitebox thử 
+            + Text: Attention map
+            + Image: 
+        + Data: preprocessing (normalization, augmentation, ...) - transform/trajectory mechanism
+
+- Cụ thể bài toán (problem) hiện tại: 
+    + Giải quyết bài toán alignment: text token - image token, 
+    + Note: cần làm rõ hơn
+
+
+Questions:
+- Trong task captioning: VLM thì phần quan trọng được định nghĩa là phần nào trong ảnh? --> có liên quan đến những feature map không?
+
+
+
+
+------------------------------------------------------------------------------------------------------------
+# Run experiment
+Data: ImageNet - subset used in the NIPS 2017 Adversarial Attacks and Defenses Competition
+https://www.kaggle.com/datasets/zintom/blackbox-adversarial-attack-dataset/data
+download: 
+kaggle kernels output zintom/code_foa_attack_v1/output --file-pattern "^foa_attack_output/img/.*" -p "./result"
+
+
+
+------------------------------------------------------------------------------------------------------------
+GradCAM:
+https://openaccess.thecvf.com/content_ICCV_2017/papers/Selvaraju_Grad-CAM_Visual_Explanations_ICCV_2017_paper.pdf
+Attention:
+https://arxiv.org/pdf/2103.15679
+
+
+
+
