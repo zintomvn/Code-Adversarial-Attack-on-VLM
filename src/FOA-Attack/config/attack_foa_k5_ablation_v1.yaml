@@ -1,0 +1,7 @@
+defaults:
+  - attack_foa_baseline_v1
+  - _self_
+experiment:
+  name: attack_foa_k5_ablation_v1
+  method: foa_cluster_ablation
+  cluster_number: 5

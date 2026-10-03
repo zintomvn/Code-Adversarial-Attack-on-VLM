@@ -541,5 +541,94 @@ def pgd_attack(
     return adv_image
 
 
+from utils import ExperimentRunner
+
+
+class FOABaselineRunner(ExperimentRunner):
+    """Artifact adapter around the untouched paper FGSM implementation (K=10)."""
+
+    def build_models(self):
+        extractor, models = get_models_ot(self.cfg)
+        return extractor, get_ensemble_loss_ot(self.cfg, models)
+
+    def run(self, source=None, target=None):
+        cfg = self.cfg
+        import inspect
+        from kmeans_pytorch import kmeans
+        if 'iter_limit' not in inspect.signature(kmeans).parameters:
+            raise RuntimeError('Installed kmeans-pytorch does not support iter_limit; run setup with the versioned attack config.')
+        if cfg.attack != 'fgsm' or cfg.data.batch_size != 1 or not cfg.model.ensemble:
+            raise ValueError('Versioned FOA runner supports the original FGSM interface, ensemble=True, batch_size=1 only.')
+        if cfg.experiment.method == 'foa_baseline' and cfg.experiment.cluster_number != 10:
+            raise ValueError('Original baseline fixes cluster_number=10. Use the ablation config for other values.')
+        if not torch.cuda.is_available() and str(cfg.model.device).startswith('cuda'):
+            raise RuntimeError('Enable a Kaggle GPU accelerator before running attack.')
+        set_environment(cfg.experiment.seed)
+        wandb.init(mode='disabled', project=cfg.wandb.project)
+        try:
+            extractor, loss = self.build_models()
+            self.write_json('model_metadata.json', [
+                {'backbone': name, 'model_id': getattr(feature.model.config, '_name_or_path', None),
+                 'resolved_revision': getattr(feature.model.config, '_commit_hash', None)}
+                for name, feature in zip(cfg.model.backbone, extractor.extractors)
+            ])
+            transform = transforms.Compose([
+                transforms.Resize(cfg.model.input_res, interpolation=transforms.InterpolationMode.BICUBIC),
+                transforms.CenterCrop(cfg.model.input_res),
+                transforms.Lambda(lambda image: image.convert('RGB')),
+                transforms.Lambda(to_tensor),
+            ])
+            clean = ImageFolderWithPaths(source or cfg.data.cle_data_path, transform=transform)
+            targets = ImageFolderWithPaths(target or cfg.data.tgt_data_path, transform=transform)
+            if min(len(clean), len(targets)) < cfg.data.num_samples:
+                raise ValueError('Not enough source/target images for data.num_samples; refusing silent truncation.')
+            source_crop = transforms.RandomResizedCrop(cfg.model.input_res, scale=cfg.model.crop_scale) if cfg.model.use_source_crop else nn.Identity()
+            target_crop = transforms.RandomResizedCrop(cfg.model.input_res, scale=cfg.model.crop_scale) if cfg.model.use_target_crop else nn.Identity()
+            # Same sorted ImageFolder pairing, DataLoader iteration and cross-sample loss state as baseline.
+            clean_loader = torch.utils.data.DataLoader(clean, batch_size=1, shuffle=False)
+            target_loader = torch.utils.data.DataLoader(targets, batch_size=1, shuffle=False)
+            image_dir = self.root / 'images'
+            image_dir.mkdir()
+            for index, ((original, _, paths), (target_tensor, _, target_paths)) in enumerate(zip(clean_loader, target_loader)):
+                if index >= cfg.data.num_samples:
+                    break
+                original, target_tensor = original.to(cfg.model.device), target_tensor.to(cfg.model.device)
+                adversarial = fgsm_attack(cfg, extractor, loss, source_crop, target_crop, index, original, target_tensor)
+                if not torch.isfinite(adversarial).all():
+                    raise RuntimeError('FOA returned non-finite image values; refusing to save invalid output.')
+                sample_id = f'{index:06d}'
+                images, hashes = {}, {}
+                for role, tensor in [('source', original / 255), ('target', target_tensor / 255), ('adversarial', adversarial)]:
+                    relative = f'images/{sample_id}_{role}.png'
+                    torchvision.utils.save_image(tensor, self.root / relative)
+                    images[role], hashes[role] = relative, self.sha256(self.root / relative)
+                # Verify the saved PNG budget, not just floating point delta.
+                saved_source = np.asarray(Image.open(self.root / images['source'])).astype(np.int16)
+                saved_adv = np.asarray(Image.open(self.root / images['adversarial'])).astype(np.int16)
+                linf = int(np.abs(saved_source - saved_adv).max())
+                if linf > cfg.optim.epsilon:
+                    raise RuntimeError(f'Saved perturbation violates epsilon: {linf} > {cfg.optim.epsilon}')
+                self.append('manifest.jsonl', {
+                    'sample_id': sample_id, 'method': cfg.experiment.method,
+                    'attack_experiment': cfg.experiment.name, 'config_sha256': self.fingerprint,
+                    'cluster_number': cfg.experiment.cluster_number, 'images': images, 'image_sha256': hashes,
+                    'original_paths': {'source': paths[0], 'target': target_paths[0]},
+                    'epsilon_pixel': cfg.optim.epsilon, 'linf_pixel': linf,
+                })
+            self.write_json('status.json', {'status': 'complete', 'samples': cfg.data.num_samples})
+        finally:
+            wandb.finish()
+
+
+class FOAClusterAblationRunner(FOABaselineRunner):
+    """Explicitly labelled K/backbone ablation; not a new proposed algorithm."""
+
+    def build_models(self):
+        models = [BACKBONE_MAP[name]().eval().to(self.cfg.model.device).requires_grad_(False)
+                  for name in self.cfg.model.backbone]
+        k = self.cfg.experiment.cluster_number
+        return EnsembleFeatureExtractor_ot(models, cluster_number=k), EnsembleFeatureLoss_OT_foa_attack(models, cluster_number=k)
+
+
 if __name__ == "__main__":
     main()

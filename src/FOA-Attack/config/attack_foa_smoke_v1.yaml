@@ -1,0 +1,11 @@
+defaults:
+  - attack_foa_k5_ablation_v1
+  - _self_
+experiment:
+  name: attack_foa_smoke_v1
+model:
+  backbone: [B16, B32]
+data:
+  num_samples: 1
+optim:
+  steps: 2
