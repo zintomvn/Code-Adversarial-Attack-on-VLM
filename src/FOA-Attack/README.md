@@ -1,3 +1,7 @@
+Kaggle pipeline mới: xem [config/README.md](config/README.md). Bước evaluation chỉ dùng config `evaluate_gpt4o_judge_v2` và judge `gpt-4o`; các model GPT-5 mini/Gemini/LLaVA/InternVL/Qwen chỉ sinh caption ở bước trước. Dùng rubric Appendix C, ASR với `score > 0.5`, và AvgSim.
+
+Phần Quick Start bên dưới mô tả **entry point baseline gốc** để tái lập code cũ. `blackbox.model_name` trong lệnh legacy chỉ chọn file caption đầu vào; không phải model judge. Không dùng các lệnh legacy thay cho notebook evaluation mới nếu báo cáo protocol main-paper.
+
 <h3  align="center">⚔️ Adversarial Attacks against Closed-Source MLLMs via Feature Optimal Alignment</h3>
 <p align="center">
   <img src="https://visitor-badge.laobi.icu/badge?page_id=jiaxiaojunQAQ.FOA-Attack" alt="访客统计" />
