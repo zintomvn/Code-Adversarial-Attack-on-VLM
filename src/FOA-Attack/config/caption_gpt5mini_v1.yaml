@@ -1,0 +1,8 @@
+defaults:
+  - caption_protocol_v1
+  - _self_
+experiment:
+  name: caption_gpt5mini_v1
+caption:
+  provider: openai
+  model_id: gpt-5-mini-2025-08-07

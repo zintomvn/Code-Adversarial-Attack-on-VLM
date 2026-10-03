@@ -1,0 +1,8 @@
+# Only override caption instructions; model/provider/quantization stay in model configs.
+defaults:
+  - _self_
+experiment:
+  version: v2
+caption:
+  prompt: "Describe this image."
+  max_new_tokens: 512

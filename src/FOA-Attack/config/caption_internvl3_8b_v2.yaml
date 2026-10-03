@@ -1,0 +1,6 @@
+defaults:
+  - caption_internvl3_8b_v1
+  - caption_protocol_v2
+  - _self_
+experiment:
+  name: caption_internvl3_8b_v2

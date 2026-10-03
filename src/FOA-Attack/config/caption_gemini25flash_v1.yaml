@@ -1,0 +1,8 @@
+defaults:
+  - caption_protocol_v1
+  - _self_
+experiment:
+  name: caption_gemini25flash_v1
+caption:
+  provider: gemini
+  model_id: gemini-2.5-flash

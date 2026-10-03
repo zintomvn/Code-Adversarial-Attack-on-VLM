@@ -1,0 +1,6 @@
+defaults:
+  - caption_qwen3vl_8b_v1
+  - caption_protocol_v2
+  - _self_
+experiment:
+  name: caption_qwen3vl_8b_v2
