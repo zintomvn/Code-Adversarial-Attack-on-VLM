@@ -250,5 +250,125 @@ def main(cfg: MainConfig):
         wandb.finish()
 
 
+from utils import ExperimentRunner, KaggleRuntime
+
+
+class VersionedImageDescriptionGenerator(ImageDescriptionGenerator):
+    """Common caption prompt; modern adapters without changing legacy generators."""
+
+    def __init__(self, cfg):
+        self.cfg = cfg
+        self.model_name = cfg.caption.model_id
+        self.metadata = {}
+        if cfg.caption.provider == 'openai':
+            self.client = OpenAI(api_key=KaggleRuntime.secret('OPENAI_API_KEY'), timeout=cfg.caption.timeout, max_retries=3)
+        elif cfg.caption.provider == 'gemini':
+            from google.genai import types
+            self.client = genai.Client(api_key=KaggleRuntime.secret('GEMINI_API_KEY'),
+                                       http_options=types.HttpOptions(timeout=int(cfg.caption.timeout * 1000)))
+        elif cfg.caption.provider == 'huggingface':
+            self._load_local()
+        else:
+            raise ValueError(f'Unknown provider: {cfg.caption.provider}')
+
+    def _load_local(self):
+        from transformers import AutoProcessor, AutoModelForImageTextToText, BitsAndBytesConfig
+        if not torch.cuda.is_available():
+            raise RuntimeError('Local VLM inference requires a Kaggle GPU.')
+        torch.manual_seed(self.cfg.experiment.seed)
+        dtype = torch.bfloat16 if torch.cuda.get_device_capability(0)[0] >= 8 else torch.float16
+        options = dict(device_map={'': 0}, torch_dtype=dtype, low_cpu_mem_usage=True, attn_implementation='eager',
+                       revision=self.cfg.caption.revision, trust_remote_code=False)
+        if self.cfg.caption.quantization == 'nf4':
+            options['quantization_config'] = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type='nf4',
+                                                               bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=dtype)
+        elif self.cfg.caption.quantization != 'none':
+            raise ValueError('Use quantization=nf4 or none.')
+        self.processor = AutoProcessor.from_pretrained(self.model_name, revision=self.cfg.caption.revision, trust_remote_code=False)
+        self.model = AutoModelForImageTextToText.from_pretrained(self.model_name, **options).eval()
+        self.metadata = {'resolved_revision': getattr(self.model.config, '_commit_hash', None),
+                         'dtype': str(dtype), 'quantization': self.cfg.caption.quantization,
+                         'gpu': torch.cuda.get_device_name(0)}
+
+    @retry(wait=wait_random_exponential(min=1, max=30), stop=stop_after_attempt(3), reraise=True)
+    def generate_description(self, image_path):
+        cfg = self.cfg.caption
+        self.last_response = {}
+        if cfg.provider == 'openai':
+            response = self.client.responses.create(
+                model=self.model_name, store=False, reasoning={'effort': cfg.reasoning_effort},
+                max_output_tokens=cfg.max_output_tokens,
+                input=[{'role': 'user', 'content': [
+                    {'type': 'input_text', 'text': cfg.prompt},
+                    {'type': 'input_image', 'image_url': f'data:image/png;base64,{encode_image(image_path)}', 'detail': 'high'},
+                ]}])
+            if response.status != 'completed':
+                raise ValueError(f'Incomplete OpenAI response: {response.status}')
+            text = response.output_text
+            self.last_response = {'response_id': response.id, 'model': response.model,
+                                  'usage': response.usage.model_dump(mode='json') if response.usage else None}
+        elif cfg.provider == 'gemini':
+            from google.genai import types
+            with open(image_path, 'rb') as stream:
+                part = types.Part.from_bytes(data=stream.read(), mime_type='image/png')
+            response = self.client.models.generate_content(model=self.model_name, contents=[cfg.prompt, part],
+                config=types.GenerateContentConfig(temperature=0, max_output_tokens=cfg.max_output_tokens,
+                                                   thinking_config=types.ThinkingConfig(thinking_budget=0)))
+            if not response.candidates or 'STOP' not in str(response.candidates[0].finish_reason):
+                raise ValueError('Gemini output blocked or truncated.')
+            text = response.text
+            self.last_response = {'model': getattr(response, 'model_version', self.model_name),
+                                  'usage': response.usage_metadata.model_dump(mode='json') if response.usage_metadata else None}
+        else:
+            messages = [{'role': 'user', 'content': [{'type': 'image', 'url': os.path.abspath(image_path)},
+                                                    {'type': 'text', 'text': cfg.prompt}]}]
+            inputs = self.processor.apply_chat_template(messages, add_generation_prompt=True, tokenize=True,
+                                                         return_dict=True, return_tensors='pt')
+            inputs = inputs.to(self.model.device, dtype=self.model.dtype)
+            with torch.inference_mode():
+                tokens = self.model.generate(**inputs, do_sample=False, max_new_tokens=cfg.max_new_tokens)
+            generated = tokens[0, inputs['input_ids'].shape[1]:]
+            if len(generated) >= cfg.max_new_tokens:
+                raise ValueError('Local caption reached max_new_tokens; raise the limit in a new config version.')
+            text = self.processor.decode(generated, skip_special_tokens=True)
+        if not text or not text.strip():
+            raise ValueError('Empty caption; refusal/failure is not a valid description.')
+        return text.strip()
+
+
+class CaptionExperimentRunner(ExperimentRunner):
+    def run(self):
+        import shutil
+        input_root, samples = self.read_input('manifest.jsonl')
+        generator = VersionedImageDescriptionGenerator(self.cfg)
+        self.write_json('model_metadata.json', {'model_id': generator.model_name, **generator.metadata})
+        cache, failures = {}, 0
+        for sample in tqdm(samples, desc=generator.model_name):
+            for role in ('source', 'target', 'adversarial'):
+                path = (input_root / sample['images'][role]).resolve()
+                if not path.is_relative_to(input_root.resolve()) or not path.is_file():
+                    raise ValueError(f'Unsafe or missing image: {path}')
+                if self.sha256(path) != sample['image_sha256'][role]:
+                    raise ValueError(f'Image checksum mismatch: {path}')
+            row = dict(sample)
+            row.update(caption_experiment=self.cfg.experiment.name, caption_model=generator.model_name,
+                       caption_config_sha256=self.fingerprint, captions={}, caption_responses={}, errors={})
+            for role in ('source', 'target', 'adversarial'):
+                checksum = sample['image_sha256'][role]
+                try:
+                    if checksum not in cache:
+                        caption = generator.generate_description(str(input_root / sample['images'][role]))
+                        cache[checksum] = (caption, generator.last_response)
+                    row['captions'][role], row['caption_responses'][role] = cache[checksum]
+                except Exception as error:
+                    # Keep a failure distinct from a zero score, without exposing API keys/messages.
+                    row['errors'][role] = type(error).__name__
+                    failures += 1
+            row['status'] = 'ok' if not row['errors'] else 'error'
+            self.append('captions.jsonl', row)
+        shutil.copy2(input_root / 'manifest.jsonl', self.root / 'manifest.jsonl')
+        self.write_json('status.json', {'status': 'complete' if not failures else 'partial', 'failed_captions': failures, 'samples': len(samples)})
+
+
 if __name__ == "__main__":
     main()
