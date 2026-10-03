@@ -1,0 +1,15 @@
+defaults:
+  - pipeline_common_v1
+  - _self_
+stage: evaluation
+experiment:
+  name: evaluate_gpt4o_judge_v2
+  version: v2
+evaluation:
+  protocol: foa_paper_gpt4o_v2
+  # Judge is independent of the model that produced captions.
+  judge_model: gpt-4o
+  # Caption model is input provenance only; no caption-model selection in evaluation.
+  timeout: 90
+  success_threshold: 0.5
+  include_diagnostics: false
