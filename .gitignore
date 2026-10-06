@@ -1,2 +1,6 @@
 # outputs
 /outputs
+
+__pycache__/
+*.pyc
+/tests/foa-test-*/

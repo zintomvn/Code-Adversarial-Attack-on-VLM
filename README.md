@@ -2,6 +2,7 @@
 
 Kaggle workflow: [hướng dẫn attack → caption → GPT-4o judge](src/FOA-Attack/config/README.md).
 Mỗi notebook có 4 code cell; logic OOP nằm trong các file Python hiện có, không có module `pipeline_*.py` mới.
+Source code được clone/pull trực tiếp từ GitHub vào `/kaggle/working/Code-Adversarial-Attack-on-VLM`, không cần upload code thành Kaggle Dataset. Chọn `GIT_BRANCH` và cấu hình đường dẫn dữ liệu riêng.
 
 - [Sinh ảnh adversarial](notebooks/attacks/generate_adv_samlples_foa_v1.ipynb).
 - [Sinh caption](notebooks/captioning/text_generation_v1.ipynb): chọn `caption_<model>_v2` cho GPT-5 mini, Gemini 2.5 Flash, LLaVA-1.5-7B, InternVL3-8B hoặc Qwen3-VL-8B.

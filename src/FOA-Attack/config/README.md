@@ -2,12 +2,14 @@
 
 ## Chạy ba notebook
 
-1. Upload repository này thành Kaggle Dataset (không upload `api_keys.*`). Trong notebook đặt `REPO_DIR` tới thư mục chứa `src/FOA-Attack`. Bật Internet. Bật GPU khi attack hoặc caption bằng model local.
+1. Bật Internet. Cell đầu của cả ba notebook tự `git clone --branch main` từ `https://github.com/zintomvn/Code-Adversarial-Attack-on-VLM.git` vào `/kaggle/working/Code-Adversarial-Attack-on-VLM`; nếu repo đã tồn tại thì switch branch và `git pull --ff-only`. **Không cần upload source code thành Kaggle Dataset.** Có thể đổi `GIT_BRANCH` để chạy branch thực nghiệm. Notebook in commit SHA để ghi lại phiên bản code. Commit/push thay đổi Python lên GitHub trước khi chạy lại notebook; clone/pull không lấy code chưa push. Không dùng reset/clean để ghi đè chỉnh sửa local. Bật GPU khi attack hoặc caption bằng model local.
 2. Chạy `notebooks/attacks/generate_adv_samlples_foa_v1.ipynb`. Sửa `SOURCE_DIR`, `TARGET_DIR` tới các thư mục ImageFolder: mỗi thư mục phải có thư mục con chứa ảnh. Hai ImageFolder được ghép theo thứ tự đường dẫn đã sort, giống baseline; kiểm tra `original_paths` trong manifest để xác nhận pairing. `attack_foa_smoke_v1` chỉ kiểm tra 1 cặp/2 bước, không dùng báo cáo kết quả baseline.
-3. Tải ZIP, giải nén và upload thư mục output thành Kaggle Dataset. Chạy `notebooks/captioning/text_generation_v1.ipynb`, đặt `INPUT_DIR` tới **một run attack**, rồi chọn `CONFIG_NAME` bên dưới. Không upload ZIP chưa giải nén. Output caption không chứa lại ảnh; giữ ZIP attack riêng.
-4. Tải ZIP caption, giải nén/upload; chạy `notebooks/evaluation/gpt_evaluate_v1.ipynb`. Đặt `INPUT_DIR` tới **một run caption**. Giữ `CONFIG_NAME = "evaluate_gpt4o_judge_v2"` cho mọi model captioning: judge luôn là GPT-4o, không phải model sinh caption. Tên notebook giữ `_v1` theo yêu cầu đường dẫn ban đầu, nhưng config mặc định đã dùng protocol v2.
+3. Chạy `notebooks/captioning/text_generation_v1.ipynb`, đặt `INPUT_DIR` tới **một run attack đã giải nén**, rồi chọn `CONFIG_NAME` bên dưới. Nếu output đang có trong cùng session, dùng đường dẫn `/kaggle/working/foa_outputs/<run>`. Nếu chuyển session/notebook, cần chuyển output sang session mới; có thể dùng Kaggle Dataset cho **dữ liệu/output**, nhưng đây không phải yêu cầu triển khai source code. Ba session Kaggle riêng không tự chia sẻ `/kaggle/working`. Output caption không chứa lại ảnh; giữ ZIP attack riêng.
+4. Chạy `notebooks/evaluation/gpt_evaluate_v1.ipynb`, đặt `INPUT_DIR` tới **một run caption đã giải nén** trong session hiện tại. Giữ `CONFIG_NAME = "evaluate_gpt4o_judge_v2"` cho mọi model captioning: judge luôn là GPT-4o, không phải model sinh caption. Tên notebook giữ `_v1` theo yêu cầu đường dẫn ban đầu, nhưng config mặc định đã dùng protocol v2.
 
 Mỗi notebook có 4 code cell: cấu hình đường dẫn, cài môi trường, gọi Python, xuất ZIP. Khi đổi model chỉ đổi `CONFIG_NAME`; đường dẫn input giữ nguyên nếu dùng cùng dataset. Mọi xử lý nằm trong các file Python cũ, không có Python module mới.
+
+Đường dẫn `SOURCE_DIR`, `TARGET_DIR` và `INPUT_DIR` là dữ liệu ảnh/caption, độc lập với repo GitHub. Giá trị `/kaggle/input/...` trong notebook chỉ là ví dụ cho dữ liệu; có thể đổi sang thư mục đã tải về trong `/kaggle/working`.
 
 | Model | CONFIG_NAME caption | CONFIG_NAME evaluation |
 |---|---|---|
