@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+results/
+*.log
+.env
+.env.*
+# Clean source images ship in the server-test ZIP; do not add them to Git by accident.
+input/images/aadcd/*
+!input/images/aadcd/.gitkeep
+# attacked_images/ is intentionally trackable for the planned image release.

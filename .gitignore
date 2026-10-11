@@ -1,5 +1,8 @@
-# outputs
-/outputs
+# Generated experiment outputs and local scratch files
+/outputs/
+/tmp/
+/src/SAGA/attacked_images/images/
+/src/SAGA/attacked_images/targets.jsonl
 
 __pycache__/
 *.pyc
