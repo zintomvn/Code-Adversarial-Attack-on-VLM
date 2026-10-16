@@ -5,6 +5,7 @@ concurrency is explicit: workers=2 is a benchmark candidate, not image batching.
 Finish the priority evaluation before starting this launcher on the same GPU.
 """
 import argparse
+import builtins
 from contextlib import redirect_stdout
 import importlib.util
 import json
@@ -50,10 +51,39 @@ class QueuedWriter:
         return self.target.flush()
 
 
-def task_worker(root, name, prefix, hours):
+def task_worker(root, name, prefix, hours, stop_after_variant=None, pause_file=None):
     module = load_driver(root)
     plan = module.read_json(root / 'molab_hypotheses_n200.json')
     job = next(j for j in plan['attack_jobs'] if j['name'] == name)
+    if stop_after_variant and stop_after_variant not in job['variants']:
+        raise ValueError('Stop variant must belong to this job')
+    pause_file = Path(pause_file) if pause_file else None
+    if stop_after_variant or pause_file:
+        def execute_with_boundary(code, namespace):
+            builtins.exec(code, namespace)
+            if 'run_experiment' not in namespace or namespace.get('_variant_boundary_installed'):
+                return
+            namespace['_variant_boundary_installed'] = True
+            original_write = namespace['write_json']
+
+            def boundary_write(path, value):
+                original_write(path, value)
+                path = Path(path)
+                run = namespace.get('RUN_DIR')
+                if not run or path.name != 'status.json' or path.parent.parent != Path(run):
+                    return
+                if path.parent.name not in job['variants']:
+                    return
+                if pause_file and pause_file.exists() and value.get('status') in ('running', 'complete'):
+                    pause_file.unlink(missing_ok=True)
+                    raise module.BoundaryPause('GPU handoff after a complete sample and rebuilt manifest')
+                if path.parent.name == stop_after_variant and value.get('status') == 'complete':
+                    raise module.BoundaryPause('Ablation complete; hand off immediately to evaluation')
+
+            namespace['write_json'] = boundary_write
+        # Operational hook only. Original notebook cells, full RUN_VARIANTS,
+        # run identity, numerical updates and prefix resume checks remain intact.
+        module.exec = execute_with_boundary
     state = merged_state(root, module)
     task_root = root / 'parallel_tasks' / name
     task_root.mkdir(parents=True, exist_ok=True)
@@ -145,6 +175,7 @@ def task_worker(root, name, prefix, hours):
                     'launcher_sha256': module.digest(__file__), 'job': name,
                     'sample_batch_size': 1, 'backup': 'bounded_queue_2_immutable_archives_checksum_readback',
                     'original_driver_sha256': module.digest(root / 'molab_hypothesis_campaign.py'),
+                    'stop_after_variant': stop_after_variant, 'pause_file_enabled': pause_file is not None,
                     'algorithm': 'unchanged; preserve per-variant FOA/RNG state and image order'})
                 for instance in instances:
                     instance.snapshot(run)
@@ -161,13 +192,16 @@ def main():
     parser.add_argument('--workers', type=int, choices=[1, 2], default=1)
     parser.add_argument('--max-hours', type=float, default=8)
     parser.add_argument('--task')
+    parser.add_argument('--stop-after-variant')
+    parser.add_argument('--pause-file', type=Path)
     args = parser.parse_args()
     root = args.root.resolve()
     module = load_driver(root)
     if args.max_hours <= 0:
         parser.error('--max-hours must be positive')
     if args.mode == '_task':
-        return task_worker(root, args.task, args.backup_prefix, args.max_hours)
+        return task_worker(root, args.task, args.backup_prefix, args.max_hours,
+                           args.stop_after_variant, args.pause_file)
     state = merged_state(root, module)
     plan = module.read_json(root / 'molab_hypotheses_n200.json')
     jobs = []

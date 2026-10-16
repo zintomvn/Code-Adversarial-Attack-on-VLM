@@ -92,6 +92,52 @@ class TaskTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Conflicting task state'):
             tasks.merged_state(self.root, module)
 
+    def test_boundary_hook_waits_for_status_and_keeps_full_variant_list(self):
+        module, _ = self.fake_module()
+        module.write_json(self.root / 'molab_hypotheses_n200.json', {
+            'attack_jobs': [{'name': 'primary_ablations', 'variants': ['plain', 'negative']}]})
+        class BoundaryPause(BaseException):
+            pass
+        module.BoundaryPause = BoundaryPause
+        run = Path(module.read_json(self.root / 'campaign_state.json')['attack_runs']['primary_ablations'])
+        def worker(root, plan, job, state_path, prefix, hours):
+            self.assertEqual(job['variants'], ['plain', 'negative'])
+            ns = {'write_json': module.write_json, 'RUN_DIR': run}
+            module.exec(compile('def run_experiment(): pass', 'test', 'exec'), ns)
+            # Other status and running events must not stop a job.
+            ns['write_json'](run / 'status.json', {'status': 'complete'})
+            ns['write_json'](run / 'plain/status.json', {'status': 'running'})
+            with self.assertRaises(BoundaryPause):
+                ns['write_json'](run / 'plain/status.json', {'status': 'complete'})
+            self.assertEqual(module.read_json(run / 'plain/status.json')['status'], 'complete')
+            return 75
+        module.attack_worker = worker
+        with patch.object(tasks, 'load_driver', return_value=module):
+            self.assertEqual(tasks.task_worker(self.root, 'primary_ablations', 'backup', 1, 'plain'), 75)
+
+    def test_gpu_handoff_flag_only_stops_after_sample_status(self):
+        module, _ = self.fake_module()
+        module.write_json(self.root / 'molab_hypotheses_n200.json', {
+            'attack_jobs': [{'name': 'primary_ablations', 'variants': ['plain']}]})
+        class BoundaryPause(BaseException):
+            pass
+        module.BoundaryPause = BoundaryPause
+        run = Path(module.read_json(self.root / 'campaign_state.json')['attack_runs']['primary_ablations'])
+        flag = self.root / 'pause.request'
+        flag.touch()
+        def worker(*args):
+            ns = {'write_json': module.write_json, 'RUN_DIR': run}
+            module.exec(compile('def run_experiment(): pass', 'test', 'exec'), ns)
+            ns['write_json'](run / 'plain/samples/00000/complete.json', {'done': True})
+            self.assertTrue(flag.exists())
+            with self.assertRaises(BoundaryPause):
+                ns['write_json'](run / 'plain/status.json', {'status': 'running'})
+            self.assertFalse(flag.exists())
+            return 75
+        module.attack_worker = worker
+        with patch.object(tasks, 'load_driver', return_value=module):
+            self.assertEqual(tasks.task_worker(self.root, 'primary_ablations', 'backup', 1, pause_file=flag), 75)
+
 
 if __name__ == '__main__':
     unittest.main()

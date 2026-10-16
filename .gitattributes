@@ -6,3 +6,7 @@ notebooks/text_gen_eval_v3.1.ipynb text eol=lf
 notebooks/attacks/molab_hypothesis_campaign.py text eol=lf
 notebooks/attacks/molab_hypotheses_n200.json text eol=lf
 notebooks/attacks/kltn-attack-v4.3.2-h1.ipynb text eol=lf
+notebooks/attacks/kltn-attack-v4.3.3-h1-cfvlm.ipynb text eol=lf
+notebooks/attacks/cfvlm_negatives.py text eol=lf
+notebooks/attacks/molab_remaining_tasks.py text eol=lf
+notebooks/attacks/molab_overnight.py text eol=lf
