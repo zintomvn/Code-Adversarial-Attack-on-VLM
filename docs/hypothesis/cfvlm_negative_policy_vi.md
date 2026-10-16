@@ -56,3 +56,24 @@ Builder `build_molab_cfvlm_bundle.py` tạo ZIP và notebook với SHA cố đ�
 `molab_cfvlm_setup.py` khóa plan/provenance, khôi phục checkpoint và cài hai
 môi trường attack/evaluation riêng. Control H4 chỉ khởi động sau khi cache
 source/target đã đủ 200 mẫu để tránh tự sinh lại caption ngoài ý muốn.
+
+## Giới hạn kiểm tra thực tế
+
+Kiểm tra trên RTX PRO 6000 cho thấy audit Qwen vẫn có false positive/negative:
+có response thiếu `caption`, hoặc lý do và boolean không nhất quán. Validator
+loại response thiếu/sai cấu trúc, nhưng không thể phát hiện mọi sai sót ngữ
+nghĩa. Cần rà soát bank/trace trước khi diễn giải kết quả như negative chuẩn
+CF-VLM; nhãn `audited` chỉ nói đã qua lượt kiểm tra tự động cùng checkpoint.
+
+Trong lượt chạy ngày 16/10/2026, H4 mpc-zero đã tạo ảnh đầu tiên rồi gặp lỗi
+PyTorch `could not compute gradients for some functions` ở ảnh thứ hai. Lỗi
+được lưu trong `errors.jsonl`; không bỏ qua ảnh lỗi. Controller có thể nhận
+lại worker primary đang chạy qua `--adopt-state`, đồng thời thử resume H4 từ
+prefix đã complete với nguyên fingerprint/FOA/RNG. Đây là phục hồi tiến trình,
+không phải sửa hoặc thay đổi công thức gradient. Nếu lỗi lặp lại, giữ failed
+status và cần điều tra runtime trước khi coi cohort 200 ảnh là hoàn tất.
+Lượt resume đã vượt bước 37 trước đó, rồi gặp lại cùng lỗi ở bước 79 của
+ảnh thứ hai. Vì vậy chưa xác nhận pipeline attack 200 ảnh ổn định; lỗi runtime
+này độc lập với việc đổi prompt caption. Negative bank mới vẫn được chuẩn bị
+và checkpoint lên Drive. Kiểm tra API đã xác nhận key phiên mới truy cập được
+model `gpt-4o` mà không ghi key vào notebook/log.
