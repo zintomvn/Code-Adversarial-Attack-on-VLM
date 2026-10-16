@@ -10,3 +10,7 @@ notebooks/attacks/kltn-attack-v4.3.3-h1-cfvlm.ipynb text eol=lf
 notebooks/attacks/cfvlm_negatives.py text eol=lf
 notebooks/attacks/molab_remaining_tasks.py text eol=lf
 notebooks/attacks/molab_overnight.py text eol=lf
+notebooks/attacks/molab_cfvlm_setup.py text eol=lf
+notebooks/attacks/build_cfvlm_attack.py text eol=lf
+notebooks/attacks/build_molab_cfvlm_bundle.py text eol=lf
+notebooks/attacks/molab_cfvlm_overnight_v2.ipynb text eol=lf
