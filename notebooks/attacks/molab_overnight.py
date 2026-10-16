@@ -71,6 +71,28 @@ def factual_captions_ready(state, expected):
                                             for row in records.values())
 
 
+def process_state(pid):
+    path = Path('/proc') / str(pid) / 'stat'
+    try:
+        content = path.read_text()
+    except FileNotFoundError:
+        return None
+    fields = content[content.rfind(')') + 2:].split()
+    return {'state': fields[0], 'parent': int(fields[1]), 'start_ticks': fields[19]}
+
+
+class AdoptedProcess:
+    """Observe a worker surviving controller replacement without relaunching it."""
+    def __init__(self, pid, start_ticks, result):
+        self.pid, self.start_ticks, self.result = pid, start_ticks, result
+
+    def poll(self):
+        state = process_state(self.pid)
+        if state and state['start_ticks'] == self.start_ticks and state['state'] != 'Z':
+            return None
+        return self.result()
+
+
 class Controller:
     def __init__(self, root, eval_root, control_root, hours, workers, batch_size, backup_prefix, eval_backup_prefix):
         self.root, self.eval_root, self.control_root = root, eval_root, control_root
@@ -96,6 +118,29 @@ class Controller:
 
     def remaining(self):
         return max(0., (self.deadline - time.monotonic()) / 3600)
+
+    def adopt(self, path):
+        saved = self.attack.read_json(path)
+        for item in saved['workers']:
+            config = next(c for c in self.configs if c['id'] == item['config_id'])
+            state = process_state(item['pid'])
+            if not state or state['state'] == 'Z' or state['start_ticks'] != item['start_ticks']:
+                raise RuntimeError('Adopted worker no longer matches its recorded process identity')
+            directory = self.root / 'parallel_tasks' / config['job']
+            log_path = directory / 'overnight_attack.log'
+            def result(config=config, log_path=log_path):
+                run = self.attack_state()['attack_runs'].get(config['job'])
+                if complete_count(run, config['variant']) == self.plan['num_samples']:
+                    return 0
+                text = log_path.read_text(encoding='utf-8', errors='replace')[-10000:]
+                if 'DRIVE BACKUP DRAINED AND VERIFIED' in text and 'PAUSED AT CHECKPOINT:' in text:
+                    return 75
+                return 1
+            self.active[config['job']] = {
+                'process': AdoptedProcess(item['pid'], item['start_ticks'], result),
+                'config': config, 'log': log_path.open('a', encoding='utf-8'),
+                'pause': directory / 'gpu_handoff.request', 'started': time.monotonic() - 120}
+            print('ADOPTED EXISTING WORKER', config['id'], 'PID', item['pid'], flush=True)
 
     def attack_state(self):
         state = self.tasks.merged_state(self.root, self.attack)
@@ -352,6 +397,7 @@ def main():
     parser.add_argument('--caption-batch-size', type=int, choices=range(1, 65), default=64)
     parser.add_argument('--backup-prefix', default='KLTN_Molab_Hypotheses_n200_v432_h1/results')
     parser.add_argument('--eval-backup-prefix', default='KLTN_Molab_Hypotheses_n200_v432_h1/evaluation_completed_v1')
+    parser.add_argument('--adopt-state', type=Path, help='Verified surviving workers from a replaced controller')
     args = parser.parse_args()
     if args.max_hours <= 0:
         parser.error('--max-hours must be positive')
@@ -364,9 +410,12 @@ def main():
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             raise RuntimeError('An overnight controller is already running for this root')
-        return Controller(args.root.resolve(), args.eval_root.resolve(), args.control_root.resolve(),
-                          args.max_hours, args.attack_workers, args.caption_batch_size,
-                          args.backup_prefix, args.eval_backup_prefix).run()
+        controller = Controller(args.root.resolve(), args.eval_root.resolve(), args.control_root.resolve(),
+                                args.max_hours, args.attack_workers, args.caption_batch_size,
+                                args.backup_prefix, args.eval_backup_prefix)
+        if args.adopt_state:
+            controller.adopt(args.adopt_state)
+        return controller.run()
 
 
 if __name__ == '__main__':

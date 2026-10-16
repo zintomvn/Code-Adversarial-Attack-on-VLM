@@ -4,6 +4,7 @@ from pathlib import Path
 import shutil
 import unittest
 import uuid
+from unittest.mock import patch
 
 REPO = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('overnight', REPO / 'notebooks/attacks/molab_overnight.py')
@@ -12,6 +13,15 @@ spec.loader.exec_module(night)
 
 
 class OvernightTests(unittest.TestCase):
+    def test_adoption_rejects_pid_reuse_and_observes_checkpoint_exit(self):
+        process = night.AdoptedProcess(123, '456', lambda: 75)
+        with patch.object(night, 'process_state', return_value={'state':'S','start_ticks':'456'}):
+            self.assertIsNone(process.poll())
+        with patch.object(night, 'process_state', return_value={'state':'S','start_ticks':'789'}):
+            self.assertEqual(process.poll(), 75)
+        with patch.object(night, 'process_state', return_value=None):
+            self.assertEqual(process.poll(), 75)
+
     def test_h4_waits_for_the_full_factual_caption_cache(self):
         root = REPO / 'tmp' / ('overnight_qa_' + uuid.uuid4().hex)
         root.mkdir(parents=True)
