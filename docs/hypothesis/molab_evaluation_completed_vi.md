@@ -22,8 +22,8 @@ Molab live lúc khởi chạy thử dùng engine trực tiếp và xử lý capt
 
 ## Batch, cache và giới hạn tính toán
 
-- Batch caption mặc định 32, hỗ trợ 1–64; có thể thử 64 trên 96 GiB sau khi đo. Batch lớn không tự bảo đảm throughput cao hơn. Engine v3.1 chia batch đệ quy khi OOM/batch lỗi và giữ một outcome cho từng ảnh.
-- Smoke thực tế trên LLaVA/FOA, batch 32: 399 ảnh duy nhất / 200 cặp, khoảng 28,7 giây inference, peak allocated VRAM khoảng 15,2 GiB, 0 lỗi caption. Số này không gồm tải/cài model và không thay thế benchmark cho InternVL hoặc batch 64.
+- Batch caption của notebook mặc định 64, hỗ trợ 1–64. Batch lớn không tự bảo đảm throughput cao hơn; mức tối ưu cần benchmark cùng input. Engine v3.1 chia batch đệ quy khi OOM/batch lỗi và giữ một outcome cho từng ảnh.
+- Smoke thực tế trên LLaVA/FOA, batch 32: 399 ảnh duy nhất / 200 cặp, khoảng 28,7 giây inference, peak allocated VRAM khoảng 15,2 GiB, 0 lỗi caption. Batch 64 cũng đã hoàn tất 200 cặp LLaVA/MPC (peak khoảng 26,6 GiB) và InternVL/FOA (peak khoảng 8,9 GiB). Không so speedup giữa các tập ảnh khác nhau; chưa chứng minh mức batch tối ưu.
 - Các ảnh trùng checksum được sinh caption một lần trong task. Task sau được dùng lại caption khi model/revision, prompt, generation/preprocessing config, roles và seed giống nhau. Captions giữa hai victim không dùng chung.
 - Model revision được khóa bằng commit SHA ở lần chạy đầu và lưu vào state. Prompt/rubric GPT-4o, temperature 0, max_tokens 100, threshold >= 0,3 giữ nguyên v3.1.
 - GPT judge là API; tăng batch GPU không làm GPT judge nhanh hơn. Mặc định 4 worker, cùng rate governor 12 RPM / 8000 TPM và HTTP-aware retries. Chỉ tăng quota khi account thực sự hỗ trợ; không chạy nhiều judge process có rate governor riêng cho cùng quota.
@@ -70,6 +70,6 @@ Notebook evaluation có thể đổi `EVAL_ROOT` thành `/kaggle/working/eval_co
 
 - Unit tests CPU: cohort thiếu, hash/complete marker sai, ZIP traversal, selective PNG restore, cache đúng protocol, upload readback corruption, immutable backup pointer; queued backup flush, immutable bytes và lỗi network.
 - Compile mọi code cell của hai notebook mới; kiểm tra original attack notebook, campaign driver/plan giữ nguyên byte so với package đang chạy.
-- GPU smoke Molab: LLaVA batch 32, 200/200 cặp caption sẵn sàng; GPT-4o đã trả score hợp lệ. Evaluation đầy đủ 4 task, InternVL và attack 2 worker còn phải quan sát thực tế.
+- GPU smoke Molab: cả 4 task FOA/MPC × LLaVA/InternVL đã có 200/200 cặp caption sẵn sàng; LLaVA/FOA dùng batch 32, ba task tiếp theo dùng batch 64. GPT-4o đã lưu 3 score hợp lệ trước HTTP 429; phần chấm đầy đủ đang chờ key/project có quota. Attack 2 worker còn cần benchmark GPU thực tế.
 
 Nguồn chính thức: [OpenAI authentication](https://developers.openai.com/api/reference/overview#authentication), [rate limits](https://developers.openai.com/api/docs/guides/rate-limits), [LLaVA batch inference](https://huggingface.co/docs/transformers/v4.57.0/model_doc/llava).

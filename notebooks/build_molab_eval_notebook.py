@@ -36,7 +36,7 @@ Notebook độc lập, không cần chờ đủ 10 cấu hình attack. Chỉ nh�
 
 Dùng nguyên protocol `text_gen_eval_v3.1.ipynb`: LLaVA-1.5-7B, InternVL3-8B, GPT-4o, success `score >= 0.3`. InternVL3-8B khác checkpoint nhưng cùng họ với captioner attack 1B.
 
-Molab: bật GPU, import notebook này, chạy các cell theo thứ tự. Không chạy attack đồng thời khi bắt đầu evaluation. Batch 32 là điểm bắt đầu cho VRAM 96 GB, không phải mức tối ưu đã benchmark; OOM tự chia nhỏ. Có thể thử 64 sau khi đo throughput. T4 nên bắt đầu batch 2–4.
+Molab: bật GPU, import notebook này, chạy các cell theo thứ tự. Không chạy attack đồng thời khi bắt đầu evaluation. Batch 64 đã smoke trên RTX PRO 6000 cho LLaVA và InternVL, không phải mức tối ưu đã benchmark; OOM tự chia nhỏ. T4 nên bắt đầu batch 2–4.
 
 Thêm `OPENAI_API_KEY` vào environment/Secrets hoặc `/marimo/.env`; không dán key vào cell hay chat. Thiếu key vẫn tạo caption GPU, rồi resume GPT judge sau. GPT judge phát sinh phí API; mặc định giữ quota 12 RPM / 8000 TPM của campaign.
 ''')
@@ -47,7 +47,7 @@ ATTACK_ROOT = Path('/marimo/hypotheses_n200')
 # và ATTACK_ROOT thành thư mục campaign đã tải; kết nối Drive hoặc dùng input local.
 CONFIG_IDS = None  # None = mọi cấu hình đủ 200; hoặc ['primary_ablations__foa_reference']
 VICTIM_MODELS = ['LLaVA-1.5-7B', 'InternVL3-8B']
-CAPTION_BATCH_SIZE = 32  # thử 64 khi đủ VRAM; fallback OOM giữ đúng ánh xạ từng ảnh
+CAPTION_BATCH_SIZE = 64  # đã smoke trên RTX PRO 6000; T4 dùng 2–4; tự chia khi OOM
 RUN_GPT_JUDGE = True
 BACKUP_TO_DRIVE = True
 MAX_HOURS = 8  # nếu phiên Molab đã dùng ~9 giờ: đặt 1–2, hoặc mở phiên GPU mới
