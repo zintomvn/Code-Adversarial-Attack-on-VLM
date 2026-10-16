@@ -1,1 +1,8 @@
 *.pdf binary
+# These sources participate in Molab resume fingerprints; preserve LF on Windows.
+notebooks/molab_eval_completed.py text eol=lf
+notebooks/molab_eval_schedule.py text eol=lf
+notebooks/text_gen_eval_v3.1.ipynb text eol=lf
+notebooks/attacks/molab_hypothesis_campaign.py text eol=lf
+notebooks/attacks/molab_hypotheses_n200.json text eol=lf
+notebooks/attacks/kltn-attack-v4.3.2-h1.ipynb text eol=lf

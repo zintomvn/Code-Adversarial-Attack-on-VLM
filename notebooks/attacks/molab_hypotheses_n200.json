@@ -1,0 +1,65 @@
+{
+  "experiment": "kltn_v432_h1_hypotheses_n200_seed2023",
+  "num_samples": 200,
+  "steps": 300,
+  "seed": 2023,
+  "epsilon_255": 16.0,
+  "alpha_255": 1.0,
+  "dataset_manifest": "data/pairs_200.jsonl",
+  "attack_notebook": "kltn-attack-v4.3.2-h1.ipynb",
+  "eval_notebook": "text_gen_eval_v3.1.ipynb",
+  "attack_model_revisions": {
+    "OpenGVLab/InternVL3-1B-hf": "014c0583a0d4bedf29fbe2dbff4f865eb998e171",
+    "Qwen/Qwen3-VL-8B-Instruct": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "laion/CLIP-ViT-G-14-laion2B-s12B-b42K": "4b0305adc6802b2632e11cbe6606a9bdd43d35c9",
+    "openai/clip-vit-base-patch16": "57c216476eefef5ab752ec549e440a49ae4ae5f3",
+    "openai/clip-vit-base-patch32": "3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268"
+  },
+  "attack_jobs": [
+    {
+      "name": "primary_ablations",
+      "variants": ["foa_reference", "mpc_clip", "hybrid_plain", "hybrid_negative", "hybrid_fixed", "hybrid_dynamic", "hybrid_random_region", "hybrid_random_neg"],
+      "overrides": {}
+    },
+    {
+      "name": "h4_mpc_zero",
+      "variants": ["hybrid_plain"],
+      "overrides": {"LOSS_WEIGHTS": {"foa": 1.0, "mpc": 0.0, "negative": 0.5}},
+      "reuse_primary_captions": true
+    },
+    {
+      "name": "h4_image_only",
+      "variants": ["hybrid_plain"],
+      "overrides": {"FUSION_LAMBDA": 1.0},
+      "reuse_primary_captions": true
+    }
+  ],
+  "evaluation": {
+    "models": ["LLaVA-1.5-7B", "InternVL3-8B"],
+    "diagnostic_surrogate_model": "Qwen3-VL-8B",
+    "run_surrogate_diagnostic": false,
+    "success_threshold": 0.3,
+    "success_operator": ">=",
+    "judge_model": "gpt-4o",
+    "judge_rpm": 12,
+    "judge_tpm": 8000,
+    "local_batch_size": 8
+  },
+  "comparisons": [
+    {"hypothesis": "H1_negative_loss", "control": "primary_ablations/hybrid_plain", "treatment": "primary_ablations/hybrid_negative"},
+    {"hypothesis": "H1_hard_mining", "control": "primary_ablations/hybrid_random_neg", "treatment": "primary_ablations/hybrid_dynamic", "condition": "Report all pairs and the prespecified bank_size > 2 subset; do not silently drop bank_size == 2 pairs."},
+    {"hypothesis": "H2_attention_location", "control": "primary_ablations/hybrid_random_region", "treatment": "primary_ablations/hybrid_dynamic"},
+    {"hypothesis": "H3_refresh", "control": "primary_ablations/hybrid_fixed", "treatment": "primary_ablations/hybrid_dynamic"},
+    {"hypothesis": "H4_mpc_term", "control": "h4_mpc_zero/hybrid_plain", "treatment": "primary_ablations/hybrid_plain"},
+    {"hypothesis": "H4_image_text_fusion", "control": "h4_image_only/hybrid_plain", "treatment": "primary_ablations/hybrid_plain"}
+  ],
+  "notes": [
+    "200 source-target pairs per configuration, 2000 attack samples and 600000 optimizer updates in total.",
+    "mpc_clip is not full MPC. Optional mpc_full_reference is outside this initial campaign.",
+    "Qwen attention checkpoint is a surrogate diagnostic, not an independent held-out victim.",
+    "InternVL3-8B is a different checkpoint from the InternVL3-1B captioner but belongs to the same model family; report this explicitly.",
+    "One seed is an initial paired experiment, not evidence of across-seed robustness.",
+    "Keep failures and report completion/judging coverage. Compute paired differences on common valid pair IDs.",
+    "Use grouped uncertainty estimates for repeated source/target images, based on original image hashes."
+  ]
+}
