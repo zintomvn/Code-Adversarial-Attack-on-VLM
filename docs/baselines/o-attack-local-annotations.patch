@@ -1,0 +1,77 @@
+diff --git a/oattack/attacks.py b/oattack/attacks.py
+index 19b85e9..29881b8 100644
+--- a/oattack/attacks.py
++++ b/oattack/attacks.py
+@@ -122,7 +122,7 @@ def _compute_dropout_caps_for_section(section, epoch: int, steps: int, schedule_
+     ffn_cap = max(0.0, min(1.0, ffn_cap))
+     return attn_cap, ffn_cap
+ 
+-
++# Drop out
+ def _get_image_dropout_caps(cfg: Any, epoch: int) -> Tuple[float, float]:
+     steps = max(1, int(getattr(cfg.optim, "steps", 1)))
+     schedule_enabled = bool(getattr(cfg.model, "dropout_schedule", False))
+@@ -244,7 +244,7 @@ def _mix_two_captions(candidates: List[str], beta_min: float, beta_max: float) -
+ def _get_text_mix_mode(cfg: Any) -> str:
+     return str(getattr(cfg.text_objective, "mix_mode", "pair")).lower()
+ 
+-
++# mix caption in bank
+ def _mix_captions(cfg: Any, candidates: List[str], beta_min: float, beta_max: float) -> Tuple[str, float]:
+     mix_mode = _get_text_mix_mode(cfg)
+     pool = [str(x).strip() for x in candidates if str(x).strip()]
+@@ -292,6 +292,9 @@ def _collect_encoder_target_scores(
+         return torch.empty(0, device=device)
+     return torch.cat(scores, dim=0)
+ 
++
++
++# loss 
+ def _compute_text_objective(
+     cfg: Any,
+     ensemble_extractor,
+@@ -312,16 +315,19 @@ def _compute_text_objective(
+ 
+     beta_min = float(getattr(cfg.text_objective, "mix_beta_min", 0.0))
+     beta_max = float(getattr(cfg.text_objective, "mix_beta_max", 1.0))
++
+     source_texts: List[str] = []
+     target_texts: List[str] = []
+     betas: List[float] = []
+     for src_bank, tgt_bank in zip(expanded_source_banks, expanded_target_banks):
+-        src_text, beta = _mix_captions(cfg, src_bank, beta_min, beta_max)
++        # mix caption (caption bank) -> anchor and beta
++        src_text, beta = _mix_captions(cfg, src_bank, beta_min, beta_max) 
+         tgt_text, _ = _mix_captions(cfg, tgt_bank, beta_min, beta_max)
+         source_texts.append(src_text)
+         target_texts.append(tgt_text)
+         betas.append(beta)
+ 
++    # Drop out
+     img_attn_cap, img_ffn_cap = _get_image_dropout_caps(cfg, epoch)
+     text_attn_cap, text_ffn_cap = _get_text_dropout_caps(cfg, epoch)
+     _set_proxy_dropout_caps(ensemble_extractor, text_attn_cap, text_ffn_cap)
+@@ -506,6 +512,7 @@ def oattack_pgd_attack(
+     epsilon = torch.zeros_like(image_org, requires_grad=True)
+     optimizer = torch.optim.Adam([epsilon], lr=float(cfg.optim.alpha))
+     repeats = max(1, int(getattr(cfg.optim, "source_aug_crops", 10)))
++
+     source_aug_execution = _normalize_source_aug_execution(cfg)
+     text_alpha = _get_text_alpha(cfg)
+     visual_var_weight, text_var_weight = _get_objective_variance_weights(cfg)
+@@ -518,6 +525,7 @@ def oattack_pgd_attack(
+         pair_states = _sample_and_lock_proxy_dropout(ensemble_extractor)
+         try:
+             adv_image = image_org + epsilon
++            # source augmentation
+             if source_aug_execution == "batched":
+                 adv_batch, _source_batch = _build_paired_source_batches(
+                     source_aug=source_aug,
+@@ -527,6 +535,7 @@ def oattack_pgd_attack(
+                 )
+ 
+                 with torch.no_grad():
++                    # vector 
+                     target_batch = torch.cat([target_aug(image_tgt) for _ in range(repeats)], dim=0)
+                     target_features = ensemble_extractor(target_batch)
+ 

@@ -1,0 +1,9 @@
+[submodule "src/M-Attack-V2"]
+	path = src/M-Attack-V2
+	url = https://github.com/VILA-Lab/M-Attack-V2.git
+[submodule "src/MPCAttack"]
+	path = src/MPCAttack
+	url = https://github.com/LiYuanBoJNU/MPCAttack.git
+[submodule "src/O-Attack"]
+	path = src/O-Attack
+	url = https://github.com/Summu77/O-Attack.git
