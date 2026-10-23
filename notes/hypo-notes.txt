@@ -1,0 +1,218 @@
+## Idea 
+
+- Idea 1 [Data+Loss]: Tạo negative concept (nhãn khó) cho caption, tức là thay đổi concept, subject -> tạo data negative trong space khi encode -> đẩy nó ra xa
+  - Idea 1.1 [Data] - Negative samples bank: Tạo nhiều caption xong dùng LLM phân tích semantic của những caption
+    + phân tích xem caption có gì -> tập trung negative samples vào phần này
+    + encode những caption xem phân phối trong không gian như nào
+  - Idea 1.2 [Loss]:
+
+=> đảm bảo khi lưu vào không gian thì chọn hướng đúng target (augmentation)
+
+- Idea 2 [Data]: Dùng text và lấy text grounding ra làm vùng miêu chạy sinh nhiễu
+  - Idea 2.1 [Preprocessing+Sequence]: 
+    + dùng attention grounding của CLIP theo concept nhỏ
+    + Dùng  
+
+
+- Idea 3 [Preprocessing+Sequence]: Dùng dynamic update thay vì fixed salient region (thay cho random crop) tức là train theo dạng chuỗi ảnh thay đổi và lấy thông tin thay đổi cho lần tối ưu tiếp theo
+- Idea 4 [Encoder+Loss]: Áp dụng những phương pháp trên chạy tối ưu loss trong không gian chung (vector của ảnh nhiễu, ảnh source và ảnh target)
+  - Idea 4.1 [Encoder]: Những thứ có thể sửa trong CLIP encoder:
+    + CLS token (image), EOS token (text)
+    + MLP / FFN
+    + Text encoder
+    + Transformer blocks: Hidden states tại từng layer
+    + Q, K, V matrix
+  - Idea 4.2 []
+  - Note: Có thể tận dụng những phần trong model CLIP hoặc VLM
+    - CLS + Patch tokens (FOA)
+    - Value vectors (V)
+    - CLS-to-patch attention (PA-Attack)
+    - Cross-modal attention of VLM (SAGA)
+    - Intermediate semantic features (O-Attack)
+- Idea 5 [Preprocessing+Sequence]: kết hợp quá trình sinh nhiễu global và local, cụ thể trong mỗi step, tôi sẽ dùng các phương pháp XAI để trích xuất vùng crop để tạo nhiễu và song song với nó thì tôi tạo thêm nhiễu bằng toàn bức ảnh luôn sau đó gộp 2 loại lại thì nhiễu của crop sẽ được ưu tiên hơn còn background là nhiễu toàn bức Ảnh
+- Idea 6 [Data]: 
+
+
+Raw idea: ^^
+  + Dynamic concept crop
+
+
+
+
+## Hypothesis
+### Hypothesis:
+
+- H1: Tạo negative concept (nhãn khó) cho caption (text-guided)
++ thay đổi concept, subject -> tạo data negative trong space khi encode -> encode -> đẩy nó ra xa
+
+Preprocessing:
+  + positive and negative bank generatation: 
+    + input: source image, target image, prompt
+    + output: 10 captions for source and image
+
+  + Loss function for optimization (literature: https://chatgpt.com/c/6ad723b9-5b44-83ec-8d4e-3e49457a7ef2):
+    + InfoNCE
+    + SoftCSE: https://dl.acm.org/doi/epdf/10.1145/3627673.3679745
+    + Hard margin ?
+    + soft CLIP loss, point-wise loss, smooth KL (Kullback–Leibler) divergence loss
+
+- H2: Dùng text từ concept (biết token nào quan trọng) -> lấy attention map của text đó ra 
++ Lấy attention theo VLM của qwen3-vl để có thông tin attention -> không lấy IOU tách ra riêng -> tính rồi ensemble lại
++ Lấy phần đó ra để align 
+
+Source: lấy theo attention của caption tổng quan (SAGA) --> những vùng saliency region thay vì random
+Target: lấy theo concept --> những vùng saliency region thay vì random
+
+- H3: Dùng dynamic update thay vì fed salient region (thay cho random crop) tức là train theo dạng chuỗi ảnh thay đổi và lấy thông tin thay đổi cho lần tối ưu tiếp theo
+--> lấy của MPCAttack + SAGA
+
+Does dynamic XAI outperform static XAI? 
+- Dynamic concept-based vào sinh nhiễu thay cho fixed (dựa vào concept của text-guided và dynamic bằng attention map) 
+- Is the explanation actually meaningful? - Does the improvement transfer to unseen architectures?
+
+Problem:
+- Hàm loss của negative samples
+- Hàm sinh negative samples
+- Giải thuật lấy chuỗi của attention map khi lấy vùng để align - có thể gây nhiễu loạn trong attention map khi tối ưu
+
+contraint:
+- Dùng hoàn toàn đúng logic của FOA attack trong github:
+- hàm loss giữ nguyên global bằng token
+- Qwen3-VL-8B for attention map and captioning
+- dùng concept generate từ Qwen3-VL-8B để dùng làm negative samples, chọn theo k_neg samples gần với
+- XAI dùng Causal self-attention của Qwen3-VL không phải Gradient-weighted attention rollout của CLIP, dùng attention để lấy ra vùng
+- dùng thêm một text encoder giống MPC Attack để encode lấy thêm tính năng ngữ nghĩa của text
+
+
+- H4: Hàm loss và cách tối ưu theo OT không mạnh trong nhiều model -> Dùng hàm loss của MPC thay vì optimal transport
+Áp dụng những phương pháp trên chạy tối ưu loss trong không gian chung (vector của ảnh nhiễu, ảnh source và ảnh target)
+=> Insight: hàm loss FOA phế --> lấy ensemble 3 model CLIP cho image + 1 text encoder cho caption
+
+
+- H5: [Local + Global Loss] Đặt trọng số cho Global và local xem ảnh hưởng của local embedding theo attention map mạnh không?
+Paper:
+Towards Understanding Cross and Self-Attention in Stable Diffusion for Text-Guided Image Editing (CVPR 2024)
+CF-VLM: Counterfactual Vision-Language Fine-tuning
+Global loss:
+- Source + Target ---> Caption --> so sánh embedding của 2 tokens <EOS> >< <CLS> 
+Local loss:
++ Loss cho negative concepts
+
+Local
++ Từ token trong concept lấy từ caption (tham khảo câu prompt của CF-VLM) -> top concept quan trọng
++ Chạy intepret token ---> vùng ảnh (bỏ attention)
+
+Hàm loss cho negative samples (encode negative samples trong không gian)
+attention map - random hay tập trung -> khảo sát thêm của VLM khi chọn token
+token local ~ image local => negative token trong caption (Lấy tokens nào)
+
+read code in 2 paper and these github repo 
+https://github.com/tonychenxyz/vit-interpret
+https://github.com/HCP-AI-Research-Lab/CF-VLM/
+ 
+I need want to combine 2 paper CF-VLM and INViTE
+create counterfactual example about token in each concept of the image to optimize the local loss instead of just global loss like in mpc attack
+
+- H6: [Local] Dùng text token theo concept (target) --attention--> semantic region -> IoU lại -> dùng làm local embedding (nghe hơi lỏ ._.) x
+
+References: 
+  + Paper INViTE (ICLR 2024) 
+  + GDA Attack
+
+- H7: Tối ưu text-image ground để dùng cho multi labels data 
++ Tận dụng text theo concept (kỹ thuật captioning) cho multi labels
++ embedding to vector to optimize
+
+- H8: [Multi-labels] Dùng concept tokens --> regions --> resize --> (source + adv) local embedding vector >< target embedding 
++ Dùng data MSCOCO
++ [local text] Chạy concept trên nhiều ảnh --> dùng local features của text caption --> embedding --> text vector
+  + Encoder:
+    + Ảnh --> concept caption --> attention region --> 
++ [local image] Chạy concept trên nhiều ảnh --> grounding --> embedding --> local image vector  
+
+- H9: [Global and local update perturbation]
++ Chạy tối ưu perturabtion cho local region và global region
+  + Local: Attention + attention
+    + Case 1: Theo atttention target thay vì random
+    + Case 2: Theo concept attention cho cả adv và target
+  note: cải tiến thêm quy trình lấy vùng như nào - tự nghĩ đi
+  + Global: text-text encoder, image-image encoder
+
+
+
+## Insight:
+
+- Nếu dựa vào image không thì sẽ bias (chỉ biến đổi được transformation) --> không giải thích được tại sao
+- Có những paper trước đó khi người ta làm thì có insights:
+    + Text: Token trong embedding (local - k liên kết với token khác, global - có liên kết cao) là thứ giải thích phần captioning
+    + Image: những patch tokens trong ảnh (cls token hay x_cls) là nguyên nhân model transfer được (align giữa 2 patch tokens của adv image và target image)
+- Có những hướng analyze:
+    + Lý do attack yếu:
+        + Feature engineer: tokenize, layer DNN trong ViT 
+        + Modeling (surrogate model): loss, optimize (representation/optimization mechanism) -> này áp dụng mấy techniques bên whitebox thử 
+            + Text: Attention map
+            + Image: 
+        + Data: preprocessing (normalization, augmentation, ...) - transform/trajectory mechanism
+- Detail problem hiện tại: 
+    + Giải quyết bài toán alignment: text token - image token
+- Có vấn đề ở phần multi labels (nhiều concepts)
+- Trong captioning -> phần global bị một problem là semanttic phân phối k đúng vào concept regions (V-Attack) -> Value matrix
+- Khi attack thì salient region sẽ bị phân tán ra khi tăng steps trong attack (SAGA Attack) 
+- Hướng text chưa có ai nghiên cứu đủ sâu -> XAI cho hướng này (captioning) 
+- Càng nhiều model encoder -> càng đa dạng distribution -> ensemble thì sẽ mạnh hơn
+    + Image-Global: Ảnh -> cls token -> encode -> vector
+    + Image-Local: Ảnh -> patch tokens -> encode -> vector
+    + Text (Global): Text -> eos token -> encode -> vector
+
+### Design
+
+#### Hypothesis 1 
+
+#### Hypothesis 2
+Data
+  + create caption bank: Tạo ra ngân hàng positive và negative samples qua VLM captioning Qwen3-VL
+  + Concept selection: lọc chọn những concepts từ caption bank
+Preprocessing:
+  + XAI extraction: 
+    + Grad-ECLIP
+    + Attention map 
+
+Encoder (CLIP):
+  + 3 model CLIP trong baseline của FOA Attack
+
+Loss function: dùng contrastive loss (đẩy source và adversarial ra xa và kéo adversarial và target gần lại)
+- Global loss: L_{semantic} = lamda_1 * L_{text-text} + lamda_1 * L{image-image}
+  + Loss text-text: L_{text-text} = 1/k sim(text^{i}_tar, text^{i}_adv)
+  + Loss image-image: L_{image-image} = 1/k sim(img^i_{tar}, img^{i}_adv)
+- Local loss: L_{local} = sim
+- Negative loss 
+=> dùng contrastive loss
+
+Sequence (3 version): 
+  + Cập nhật global region ở dưới, local region ở trên - local region on global region in perturabtion update
+    + Local regions (2 version) lấy theo vùng quan trọng từ XAI method ở trên
+      + crop theo thông số như M-Attack
+      + cập nhật độ lớn tăng dần cứ 30 step
+  + Chỉ dùng local region để cập nhật nhiễu
+  + Chỉ dùng global region để cập nhật nhiễu
+
+Contraint: 
+- Tôi có thể test trước 5 mẫu để đảm bảo nó chạy đúng và đánh giá đúng trước khi chạy 200 mẫu
+- Những phần nào lấy code thì dùng kỹ thuật giống như code của paper không được chế thông tin hay code thông tin ngoài (code, prompt, quy trình làm)
+
+
+
+
+### Hypothesis Insight
+- Text embedding làm loss tối ưu hơn chỉ dùng image embedding
+- 
+
+## Preprocessing (Augmentation hoặc )
+
+### Attention map
+
+
+### Counterfactual
+
+
+### Concept

@@ -1,0 +1,79 @@
+## Tasks
+
+Baseline
+- Create foa attack to run attack in kaggle x
+    + Notebook to run attack
+- Fix to download images from kaggle to evaluate on VLM x
+- Run creating captioning on VLM:  x
+    + Models:
+        + close-source: GPT-5 mini, Gemini 2.5 Flash
+        + open-source: LLaVA-1.5-7B, InternVL3-8B, Qwen3-VL-8B
+    + Download model weights
+    + Run creating description (2 images) - Captioning 
+- Tối ưu tận dụng 2 GPU của kaggle cho 2 notebooks x
+- Chạy tạo ra vùng region quan trọng x
+- Run evaluate with GPT-Scorer -> ASR and AvgSim x
+- Analyze những insight từ attention-based theo concept 1 sample của paper SAGA x
+    + Fixed x
+    + Dynamic x
+- Chạy notebook extract attention map ban đầu cho 2 ảnh target và source (with layer 29 in QwenVL)
+- Create hypothesis: x
+    - H1: Tạo negative concept (nhãn khó) cho caption, tức là thay đổi concept, subject -> tạo data negative trong space khi encode -> đẩy nó ra xa
+    - H2: Dùng text -> lấy attention token của text đó ra làm vùng miêu chạy sinh nhiễu
+    - H3: Dùng dynamic update thay vì fixed salient region (thay cho random crop) tức là train theo dạng chuỗi ảnh thay đổi và lấy thông tin thay đổi cho lần tối ưu tiếp theo
+    - H4: Áp dụng những phương pháp trên chạy tối ưu loss trong không gian chung (vector của ảnh nhiễu, ảnh source và ảnh target)
+- Run code attack Dynamic attack with dynamic concept opt - filter ra những concept => optimize x
+- Run eval Dynamic attack with dynamic concept opt x
+- Fix: rate limit cho eval, cập nhật vùng ảnh - toàn ảnh x
+- Tối ưu chạy trên GPU RTX Pro 6000 - tận dụng hết song song và VRAM trong GPU x
+
+- run eval SAGA, MPC Attack, FOA - baseline so sánh x
+    + SAGA 
+    + MPC Attack  
+    + FOA 
+
+- Chạy 2 baseline năm nay:
+    + O-Attack
+    + M-Attack-V2
+
+
+- Chia thành từng thực nghiệm để chạy thay vì chạy trên 1 notebook - lập bảng thực nghiệm x
+- Chạy thực nghiệm H1
+    + concept 
+
+- Summarize literature review of hypothesis --> tạo table to check experiment 
+    + H1 - Hard negative concepts - Constructing attack-specific negative concepts based on visual evidence and failure cases, rather than generic incorrect captions
+    + H2 - Text grounding for perturbation masks - Selecting regions through concept-specific grounding combined with measured adversarial sensitivity
+    + H3 - Dynamic saliency updates - Recomputing attack-relevant regions as the adversarial image changes, rather than using a predetermined region sequence
+    + H4 - Joint source, target, adversarial optimization - Developing a new objective that distinguishes causal visual evidence from merely similar embeddings
+https://chatgpt.com/c/6abdde01-ef9c-83ec-b942-0d2b8bd77135
+https://chatgpt.com/c/6abdd7ce-7000-83ec-bac1-790a18bc3cf4
+https://chatgpt.com/c/6abdde24-06bc-83ec-91c8-b5c438e1bc5a
+
+
+- method counterfactual negative samples (based on concept) 
+    - Tạo giả thuyết cứng từng bước
+    - Chạy test những hàm loss cho negative samples:
+        + MPC attack loss 
+        + SAGA loss
+Note: unify global loss, local loss --> lấy theo sequence attention
+
+
+note: 
+    XAI-Guided: https://chatgpt.com/c/6ac91e98-229c-83ec-892f-e4f73bdf3b6f
+    Từng hypo: https://chatgpt.com/c/6ac92254-725c-83ec-9fe6-8218b4f216a9
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

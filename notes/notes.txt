@@ -1,32 +1,3 @@
-# reproduce paper FOA
-
-exp protocol
-
-results
-
-
-# Code learning
-- Hydra 
-    + Dùng quản lý config 
-    + Read file .yaml --> create object "config" --> main(config)
-
-Pipeline: 
-    + Input: source image, target image
-    + Output: ASR (counting from success attack / total)
-    + Step-by-step: 
-
-Có thể thay đổi những gì trong vòng lặp - components:
-+ Encoder 
-+ Loss function
-
-Note - Search ra được những idea sau:
-- Optimal Transport with Structured Data
-- 
-
-
-
-----------------------------------------------------------------
-
 # Prompt
 Conferences and Journals (tìm paper): 
 - Conferences: CVPR, ICCV, ECCV, IEEE SaTML, NeurIPS, ICLR, ICML, ACM Multimedia, AAAI
@@ -47,15 +18,7 @@ FOA Attack: https://github.com/jiaxiaojunqaq/foa-attack
 MPC Attack: https://github.com/LiYuanBoJNU/MPCAttack
 SAGA: https://github.com/jaehyun-kwak/SAGA
 
-
 Data: https://www.kaggle.com/datasets/zintom/blackbox-adversarial-attack-dataset
-
-
-
-
-
-
-
 
 Mục lục: 
 - 
@@ -82,7 +45,7 @@ context:
 - Những journal cần lấy: IEEE S&P / USENIX / CCS / NDSS
 - Keywords: Blackbox adversarial attack, Attack on VLM, Transferability, XAI on Blackbox adversarial attack, Adversarial attack, LVLM, VLM
 
-task: làm cho tôi bảng tóm tắt về những paper mới có  đó, dẫn link cụ thể để tôi tham khảo
+task: làm cho tôi bảng tóm tắt về những paper mới có đó, dẫn link cụ thể để tôi tham khảo
 
 contraint: 
 - Lấy những paper trong hội nghị lớn hoặc journal uy tín liên quan đến XAI và blackbox adversarial attack
@@ -114,6 +77,32 @@ contraint:
 - Những công thức toán và cách họ làm thì ký hiệu và dẫn chính xác không sinh từ hay suy luận
 
 
+
+## Explain prompt
+\<role> bạn là một AI researcher assistant <\role>\
+\<context>\
+Những paper đã đọc: \
+\- FOA-Attack, M-Attack, MPCAttack, AnyAttack, AdvDiffVLM, SAGA (NeurIPS-2026), V-Attack\
+\- CF-VLM: Counterfactual Vision-Language Fine-tuning\
+\- Grounding-Driven Attack\
+\- Explainable Saliency: Articulating Reasoning with Contextual Prioritization
+
+task: dựa vào paper này giải thích cho tôi những yếu tố sau
+- Problem
+- Method (step-by-step): trình bày thành từng giai đoạn (theo pseudocode)
+    + Preprocessing
+    + Encoding
+    + Loss function
+- Dựa vào code của paper và giải thích cho tôi cách họ làm trong 
+
+contraint: 
+- không chế hay sinh thông tin khi giải thích
+- dẫn đoạn code của tác giả vào để tôi xem
+- không chế thông tin hay lấy bất kỳ thông tin ngoài nào
+
+
+
+
 ## Hypothesis prompt 
 
 \<role> bạn là một AI researcher assistant <\role>\
@@ -123,8 +112,6 @@ Những paper đã đọc: \
 \- CF-VLM: Counterfactual Vision-Language Fine-tuning\
 \- Grounding-Driven Attack\
 \- Explainable Saliency: Articulating Reasoning with Contextual Prioritization
-
-Tôi cần tìm tài liệu / paper liên quan đến XAI để áp dụng vào làm thực nghiệm trong gap tôi nghiên cứu hiện tại  \
 Keywords: Blackbox adversarial attack, Attack on VLM, Transferability, XAI on Blackbox adversarial attack, Adversarial attack, LVLM, VLM
 
 \- Problem tôi đang nghiên cứu: Làm sao transfer được model opensource như CLIP và các models liên quan vào các model blackbox để tăng tỷ lệ attack (ASR).\
@@ -151,8 +138,6 @@ Kiểm tra cho tôi những giả thuyết sau xem có giả thuyết nào tác 
 <\requirement>
 
 \<contraint>\
-\- Lấy những paper trong hội nghị lớn hoặc journal uy tín liên quan đến XAI và blackbox adversarial attack\
-\- Không lấy những paper ngoài hay chưa được accept paper\
 \- Trích dẫn cụ thể nguồn để tôi kiểm tra\
 \- Không chế thông tin hay bịa thông tin từ paper, lấy thông tin hoàn toàn từ text trong paper\
 \- Đọc thông tin abstract của paper và dùng nó để làm thông tin suy luận, trích dẫn cụ thể\
@@ -174,8 +159,7 @@ Những paper đã đọc:
 - CF-VLM: Counterfactual Vision-Language Fine-tuning
 - Grounding-Driven Attack
 - Explainable Saliency: Articulating Reasoning with Contextual Prioritization
-Tôi cần tìm tài liệu / paper liên quan đến XAI để áp dụng vào làm thực nghiệm trong gap tôi nghiên cứu hiện tại  
-Keywords: Blackbox adversarial attack, Attack on VLM, Transferability, XAI on Blackbox adversarial attack, Adversarial attack, LVLM, VLM
+
 - Problem tôi đang nghiên cứu: Làm sao transfer được model opensource như CLIP và các models liên quan vào các model blackbox để tăng tỷ lệ attack (ASR).
 - Mục đích: tối ưu vòng lặp generate new perturbation dựa vào phần quan trọng của image bằng kỹ thuật trong XAI
 - Những hội nghị uy tín cần lấy là: CVPR, ICCV, ECCV, IEEE SaTML, NeurIPS, ICLR, ICML, ACM Multimedia, AAAI
@@ -202,8 +186,6 @@ Hypothesis:
 - Dùng kiến thức paper để suy luận
 - Kiểm tra giả thuyết đó có paper nào làm chưa, nếu làm rồi thì đảm bảo tạo novelty
 <\contraint>
-output: xuất ra file notebook kltn-attack-v4-h1.ipynb
-
 
 
 
@@ -266,11 +248,16 @@ output: xuất ra 3 notebook sau
 - text_generation_v1.ipynb lưu vào folder notebooks/captioning
 - gpt_evaluate_v1.ipynb lưu vào folder notebooks/evaluation
 
+
+
+
 Contraint
 - Khi code thì hiện log quá trình thực hiện để theo dõi tiến độ
 - Lúc code thì tuân theo những quy tắc trong OOP, tách thành từng class, không viết hàm dài, dính liền
 - Đảm bảo tôi có thể sửa code trong hàm trong file notebook khi cần thiết
 - Khi làm thì ghi lại vào AI.log
+- Khi code thì tổ chức thư mục khoa học để tôi dễ follow
+ 
 
 
 ### Code sinh text description
@@ -304,95 +291,6 @@ output: tạo cho tôi 1 notebook kltn_v3_attention.ipynb
 context: 
 - đọc cho tôi code experiment trong repo này: 
 - data tôi đã tải lên kaggle trong https://www.kaggle.com/datasets/zintom/blackbox-adversarial-attack-dataset/data
-
-
-## Tasks
-Baseline
-- Create foa attack to run attack in kaggle x
-    + Notebook to run attack
-- Fix to download images from kaggle to evaluate on VLM x
-- Run creating captioning on VLM:  x
-    + Models:
-        + close-source: GPT-5 mini, Gemini 2.5 Flash
-        + open-source: LLaVA-1.5-7B, InternVL3-8B, Qwen3-VL-8B
-    + Download model weights
-    + Run creating description (2 images) - Captioning 
-- Tối ưu tận dụng 2 GPU của kaggle cho 2 notebooks x
-- Chạy tạo ra vùng region quan trọng x
-- Run evaluate with GPT-Scorer -> ASR and AvgSim x
-- Analyze những insight từ attention-based theo concept 1 sample của paper SAGA x
-    + Fixed x
-    + Dynamic x
-- Chạy notebook extract attention map ban đầu cho 2 ảnh target và source (with layer 29 in QwenVL)
-- Create hypothesis: x
-    - H1: Tạo negative concept (nhãn khó) cho caption, tức là thay đổi concept, subject -> tạo data negative trong space khi encode -> đẩy nó ra xa
-    - H2: Dùng text -> lấy attention token của text đó ra làm vùng miêu chạy sinh nhiễu
-    - H3: Dùng dynamic update thay vì fixed salient region (thay cho random crop) tức là train theo dạng chuỗi ảnh thay đổi và lấy thông tin thay đổi cho lần tối ưu tiếp theo
-    - H4: Áp dụng những phương pháp trên chạy tối ưu loss trong không gian chung (vector của ảnh nhiễu, ảnh source và ảnh target)
-- Run code attack Dynamic attack with dynamic concept opt - filter ra những concept => optimize x
-- Run eval Dynamic attack with dynamic concept opt x
-- Fix: rate limit cho eval, cập nhật vùng ảnh - toàn ảnh x
-- Chạy test những hàm loss:
-    + MPC attack loss 
-    + SAGA loss
-    + soft CLIP loss, point-wise loss, smooth KL (Kullback–Leibler) divergence loss -> có thể dùng cho multi class 
-Note: unify global loss, local loss --> lấy theo sequence attention
-- Run attack từng hypothesis 
-- run eval SAGA (200 ảnh), MPC Attack (200 ảnh), FOA (200 ảnh) - baseline so sánh x
-    + SAGA (200 ảnh)
-    + MPC Attack (200 ảnh) x
-    + FOA (200 ảnh)
-- run eval SAGA (1000 ảnh), MPC Attack (200 ảnh), FOA (200 ảnh) - baseline so sánh 
-
-| Thứ tự | Cấu hình | Mục đích |
-| 1 | `foa_reference` | Baseline FOA |
-| 2 | `mpc_clip` | Baseline MPC dùng CLIP |
-| 3 | `hybrid_plain` | Kết hợp FOA + MPC |
-| 4 | `hybrid_negative` | Kiểm tra tác dụng negative loss |
-| 5 | `hybrid_fixed` | Vùng attention cố định |
-| 6 | `hybrid_dynamic` | Vùng attention cập nhật động |
-| 7 | `hybrid_random_region` | Đối chứng chọn vùng ngẫu nhiên |
-| 8 | `hybrid_random_neg` | Đối chứng chọn negative ngẫu nhiên |
-| 9 | `h4_mpc_zero` | Bỏ thành phần MPC để kiểm tra đóng góp |
-| 10 | `h4_image_only` | Chỉ dùng ảnh để kiểm tra đóng góp của text fusion |
-
-- Tối ưu chạy trên GPU RTX Pro 6000 - tận dụng hết song song và VRAM trong GPU
-- Chia thành từng thực nghiệm để chạy thay vì chạy trên 1 notebook
-- Chia bài toán thành nhiều hypothesis - ablation nhỏ hơn
-
-- Thống nhất cách đặt tên
-- Thống nhất quy trình chạy
-
-
-
-
-
-
-- Chạy lại baseline => chạy riêng để làm tiền đề (nhiều model)
-- Summarize literature review of XAI: concept, grounding, gradient-based, text-based 
-https://chatgpt.com/c/6abdde01-ef9c-83ec-b942-0d2b8bd77135
-https://chatgpt.com/c/6abdd7ce-7000-83ec-bac1-790a18bc3cf4
-https://chatgpt.com/c/6abdde24-06bc-83ec-91c8-b5c438e1bc5a
-
-- Summarize literature review of hypothesis --> tạo table to check experiment 
-    + H1 - Hard negative concepts - Constructing attack-specific negative concepts based on visual evidence and failure cases, rather than generic incorrect captions
-    + H2 - Text grounding for perturbation masks - Selecting regions through concept-specific grounding combined with measured adversarial sensitivity
-    + H3 - Dynamic saliency updates - Recomputing attack-relevant regions as the adversarial image changes, rather than using a predetermined region sequence
-    + H4 - Joint source, target, adversarial optimization - Developing a new objective that distinguishes causal visual evidence from merely similar embeddings
-note: 
-    https://chatgpt.com/c/6ac91e98-229c-83ec-892f-e4f73bdf3b6f
-    https://chatgpt.com/c/6ac92254-725c-83ec-9fe6-8218b4f216a9
-
-- Prepare idea to prepsent in front of professor
-- 
-
-
-
-
-
-
-
-
 
 
 - Find papers that related to XAI blackbox attack to follow --> tạo literature review
@@ -453,102 +351,6 @@ Những hướng dưới này chưa xem:
 -> idea 2: did not eval in multi labels datasets -> different concepts
 
 
-## Hypothesis
-
-### Hypothesis:
-- H 1: Tạo negative concept (nhãn khó) cho caption, tức là thay đổi concept, subject → tạo data negative trong space khi encode -> đẩy nó ra xa
-- H 2: Dùng text từ concept (biết token nào quan trọng)-> lấy attention map  của text đó ra làm vùng miêu chạy sinh nhiễu
-Lấy attention theo VLM của qwen3-vl để có thông tin attention 
-Lấy phần đó ra để align những 
-
-
-- H 3: Dùng dynamic update thay vì fixed salient region (thay cho random crop) tức là train theo dạng chuỗi ảnh thay đổi và lấy thông tin thay đổi cho lần tối ưu tiếp theo
-Note: Áp dụng những phương pháp trên chạy tối ưu loss trong không gian chung (vector của ảnh nhiễu, ảnh source và ảnh target)
---> lấy của MPCAttack + SAGA
-
-
-Problem:
-- Hàm loss của negative samples
-- Hàm sinh negative samples
-
-- Giải thuật lấy chuỗi của attention map khi lấy vùng để align - có thể gây nhiễu loạn trong attention map khi tối ưu
-
-
-contraint:
-- Dùng hoàn toàn đúng logic của FOA attack trong github: 
-- hàm loss giữ nguyên global bằng token 
-- Qwen3-VL-8B for attention map and captioning 
-- dùng concept generate từ Qwen3-VL-8B để dùng làm negative samples, chọn theo k_neg samples gần với 
-- XAI dùng Causal self-attention của Qwen3-VL không phải Gradient-weighted attention rollout của CLIP, dùng attention để lấy ra vùng
-- dùng thêm một text encoder giống MPC Attack để encode lấy thêm tính năng ngữ nghĩa của text 
-
-
-
-
-
-- H4: 
-1. captioning
-2. importance tokens
-3. grounding semantic region
-4. crop regions
-
-
-
-
-1. Negative Concept -> generation 
-Reference:
-- Towards Understanding Cross and Self-Attention in Stable Diffusion for Text-Guided Image Editing (CVPR 2024)
-- CF-VLM: Counterfactual Vision-Language Fine-tuning
-
-Hàm loss cho negative samples (encode negative samples trong không gian --> )
-attention map - random hay tập trung -> khảo sát thêm của VLM khi chọn token
-token local ~ image local => negative token trong caption (Lấy tokens nào) 
-paper: Towards Highly Transferable Vision-Language Attack via Semantic-Augmented Dynamic Contrastive Interaction
-    + Loss 
-    + kỹ thuật tạo negative
-Note: tập trung vào local - local cho token
-
-Does dynamic XAI outperform static XAI?
-    - Dynamic concept-based vào sinh nhiễu thay cho fixed (dựa vào concept của text-guided và dynamic bằng attention map)
-    - Is the explanation actually meaningful?
-    - Does the improvement transfer to unseen architectures?
-
-2. Text token <-> semantic region 
-- reference: Paper INViTE (ICLR 2024)
-
-
-3. Dynamic update attention-map
-(2026-CVPR) MPCAttack Multi-Paradigm Collaborative Adversarial Attack Against Multi-Modal Large
-(2026-NeurIPS) SAGA Attack
-
-
-Problem:
-- Vì VLM phụ thuộc vào xác suất --> đo nó có thể sai => đo nhiều lần (nhiều seed)
-
-## Insight:
-- Nếu dựa vào image không thì sẽ bias (chỉ biến đổi được transformation) --> không giải thích được tại sao
-- Có những paper trước đó khi người ta làm thì có insights:
-    + Text: Token trong embedding (local - k liên kết với token khác, global - có liên kết cao) là thứ giải thích phần captioning
-    + Image: những patch tokens trong ảnh (cls token hay x_cls) là nguyên nhân model transfer được (align giữa 2 patch tokens của adv image và target image)
-- Có những hướng analyze:
-    + Lý do attack yếu:
-        + Feature engineer: tokenize, layer DNN trong ViT 
-        + Modeling (surrogate model): loss, optimize (representation/optimization mechanism) -> này áp dụng mấy techniques bên whitebox thử 
-            + Text: Attention map
-            + Image: 
-        + Data: preprocessing (normalization, augmentation, ...) - transform/trajectory mechanism
-- Detail problem hiện tại: 
-    + Giải quyết bài toán alignment: text token - image token
-- Có vấn đề ở phần multi labels (nhiều concepts)
-- Trong captioning -> phần global bị một problem là semanttic phân phối k đúng vào concept regions (V-Attack) -> Value matrix
-- Khi attack thì salient region sẽ bị phân tán ra khi tăng steps trong attack (SAGA Attack) 
-- Hướng text chưa có ai nghiên cứu đủ sâu -> XAI cho hướng này (captioning) 
-- Càng nhiều model encoder -> càng đa dạng distribution -> ensemble thì sẽ mạnh hơn
-    + Image-Global: Ảnh -> cls token -> encode -> vector
-    + Image-Local: Ảnh -> patch tokens -> encode -> vector
-    + Text (Global): Text -> eos token -> encode -> vector
-
-
 ## Note - Papers nghiên cứu hướng mới:
 Counterfactual Reasoning
 https://arxiv.org/pdf/2609.16567
@@ -585,9 +387,14 @@ Threshold = 0.3
     + Test trước Close-source: Gemini 2.5 Flash, GPT-4.1 / GPT-5 mini
 
 GPU:
+- Molab
 - Kaggle
 - vastai
 - GPU Khoa 
+
+
+
+
 
 ------------------------------------------------------------------------------------------------------------
 GradCAM:

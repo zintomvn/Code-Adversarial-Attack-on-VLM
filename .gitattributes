@@ -3,3 +3,8 @@
 notebooks/text_gen_eval_v3.1.ipynb text eol=lf
 notebooks/attacks/kltn-attack-v4.3.2-h1.ipynb text eol=lf
 molab/*.ipynb text eol=lf
+# Preserve source hashes and portable patches after cloning on Windows.
+notebooks/attacks/baseline/**/*.py text eol=lf
+notebooks/attacks/baseline/**/*.json text eol=lf
+notebooks/attacks/baseline/**/*.ipynb text eol=lf
+docs/baselines/*.patch text eol=lf
