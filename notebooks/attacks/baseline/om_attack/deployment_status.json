@@ -1,0 +1,65 @@
+{
+  "checked_at_local": "2026-10-23T00:31:08.540687+07:00",
+  "run_name": "official_om_n200_e16_s300_v4",
+  "notebook_url": "https://molab.marimo.io/notebooks/nb_NRE5b1ieMbBcgmP6pPV2HZ",
+  "bundle_sha256": "21a1d1de2b708eac9c856550a84e0aef88f1dbb5544af964592d3ac1a2a8a744",
+  "requested": {
+    "n_per_method": 200,
+    "epsilon_pixels": 16,
+    "steps": 300
+  },
+  "compute_selection": "RTX Pro 6000 (Blackwell), 4 CPU, 32 GiB RAM",
+  "workspace_root": "/tmp/vlm_baselines/official_om_n200_e16_s300_v4",
+  "setup_cell_executed": true,
+  "drive_connected_in_v4": true,
+  "controller_started_in_v4": true,
+  "v4_confirmed_completed": {
+    "o_attack": 1,
+    "m_attack_v2": 10
+  },
+  "v4_gpu_clip_regression_verified": true,
+  "evaluation_started_in_v4": false,
+  "current_blocker": null,
+  "local_verification": {
+    "command": "python notebooks/attacks/baseline/om_attack/verify_release.py",
+    "exit_code": 0,
+    "report": "local_validation.json"
+  },
+  "historical_v3": {
+    "run_name": "official_om_n200_e16_s300_v3",
+    "drive_folder_url": "https://drive.google.com/drive/folders/1S6VZfKXFycU92-S58IVziNrn9yFeuQSF",
+    "confirmed_completed": {
+      "o_attack": 1,
+      "m_attack_v2": 0
+    },
+    "retrieval_targets_prepared": 200,
+    "retrieval_archive_bytes": 65875825,
+    "o_attack_drive_restore_report": "validation/o_attack_drive_restore.json in the v3 Drive folder",
+    "m_attack_error": "CLIPVisionTransformer.forward() got an unexpected keyword argument 'return_dict'",
+    "sandbox_error": "exceeded 8388613 byte http.MaxBytesReader limit"
+  },
+  "pending": [
+    "Complete the remaining 200-sample campaign, resuming after session expiry as needed.",
+    "Run the configured VLM and GPT-score evaluation after both attacks complete."
+  ],
+  "drive_folder_url": "https://drive.google.com/drive/folders/13bB-pBlCpevcn3rn2qdWXiLEDRHUrQQ2",
+  "controller_pid_at_launch": 4126,
+  "last_observed_stage": "attacking o_attack, full campaign after verified author batches",
+  "openai_key_loaded_privately": true,
+  "retrieval_recovered_bytes": 65875825,
+  "gpu_reported_vram_mib": 97887,
+  "old_transformers_return_dict_error_reproduced_on_gpu": true,
+  "portable_release_exported_to_v4_drive": true,
+  "log_refresh_seconds": 30,
+  "v4_drive_restore_verified": {
+    "o_attack": true,
+    "m_attack_v2": true
+  },
+  "run_fingerprint": "3430ce2b663e1f70a0734819513d5ba396b5e09d89d8fc000108810d161f2f9c",
+  "v4_real_300_step_batch_verified": {
+    "o_attack": true,
+    "m_attack_v2": true
+  },
+  "controller_alive_at_last_check": true,
+  "gpu_utilization_percent_at_last_check": 100
+}

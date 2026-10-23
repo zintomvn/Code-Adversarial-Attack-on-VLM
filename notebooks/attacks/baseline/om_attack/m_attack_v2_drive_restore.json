@@ -1,0 +1,25 @@
+{
+  "checked_at_utc": "2026-10-22T17:29:44.270849+00:00",
+  "method": "m_attack_v2",
+  "run_name": "official_om_n200_e16_s300_v4",
+  "run_fingerprint": "3430ce2b663e1f70a0734819513d5ba396b5e09d89d8fc000108810d161f2f9c",
+  "archive_id": "1sJkMf0iK6eeiWCTGVg_UY3BAT_eDexXY",
+  "archive_md5": "053bc596225a86886eab401f8a603289",
+  "restored_samples": 10,
+  "png_linf_max": 16,
+  "restored_from_drive": true,
+  "artifact_hashes_valid": true,
+  "rng_roundtrip_exact": true,
+  "environment": {
+    "python": "3.10.20",
+    "gpu": "NVIDIA RTX PRO 6000 Blackwell Server Edition",
+    "cuda": "12.8",
+    "packages": {
+      "torch": "2.10.0+cu128",
+      "torchvision": "0.25.0+cu128",
+      "transformers": "4.51.3",
+      "numpy": "2.2.4",
+      "pillow": "11.0.0"
+    }
+  }
+}

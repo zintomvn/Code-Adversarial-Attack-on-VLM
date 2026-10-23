@@ -1,0 +1,98 @@
+{
+  "run_name": "official_om_n200_e16_s300_v4",
+  "methods": [
+    "o_attack",
+    "m_attack_v2"
+  ],
+  "n": 200,
+  "epsilon": 16,
+  "steps": 300,
+  "cpu_threads": 4,
+  "session_hours": 7.5,
+  "data_archive": "",
+  "data_drive_file_id": "1V51d_Zk74JY84uJhsUIX-A1y1wfJrDJN",
+  "data_sha256": "3518b43ac953db8192a31698105cee4f277cc543351bf28e1eec6d7452987103",
+  "backup_drive": true,
+  "drive_parent_id": "1daramuahKwdAVGQtsDZTzy1v0OSG-kiI",
+  "drive_prefix": "official_baselines",
+  "model_revisions": {
+    "openai/clip-vit-base-patch16": "57c216476eefef5ab752ec549e440a49ae4ae5f3",
+    "openai/clip-vit-base-patch32": "3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268",
+    "laion/CLIP-ViT-G-14-laion2B-s12B-b42K": "4b0305adc6802b2632e11cbe6606a9bdd43d35c9",
+    "facebook/dinov2-base": "f9e44c814b77203eaa57a6bdbbd535f21ede1415",
+    "OpenGVLab/InternVL3-1B-hf": "014c0583a0d4bedf29fbe2dbff4f865eb998e171",
+    "Qwen/Qwen3-VL-8B-Instruct": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+    "llava-hf/llava-1.5-7b-hf": "b234b804b114d9e37bb655e11cbbb5f5e971b7a9",
+    "OpenGVLab/InternVL3-8B-hf": "259a3b64a14623c0ec91a045cb43f7c5af5fa6af",
+    "laion/CLIP-ViT-B-32-laion2B-s34B-b79K": "1a25a446712ba5ee05982a381eed697ef9b435cf"
+  },
+  "run_evaluation": true,
+  "evaluation": {
+    "models": [
+      "LLaVA-1.5-7B",
+      "InternVL3-8B",
+      "Qwen3-VL-8B",
+      "Gemini 2.5 Flash",
+      "GPT-5 mini"
+    ],
+    "model_settings": {
+      "LLaVA-1.5-7B": {
+        "provider": "huggingface",
+        "model_id": "llava-hf/llava-1.5-7b-hf",
+        "quantization": "nf4"
+      },
+      "InternVL3-8B": {
+        "provider": "huggingface",
+        "model_id": "OpenGVLab/InternVL3-8B-hf",
+        "quantization": "nf4"
+      },
+      "Qwen3-VL-8B": {
+        "provider": "huggingface",
+        "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+        "quantization": "nf4"
+      },
+      "Gemini 2.5 Flash": {
+        "provider": "gemini",
+        "model_id": "gemini-2.5-flash",
+        "quantization": "none"
+      },
+      "GPT-5 mini": {
+        "provider": "openai",
+        "model_id": "gpt-5-mini-2025-08-07",
+        "quantization": "none"
+      }
+    },
+    "prompt": "Describe this image in one concise sentence, no longer than 20 words.",
+    "max_new_tokens": 64,
+    "local_batch_size": 8,
+    "api_workers": 4,
+    "run_judge": true,
+    "judge_model": "gpt-4o",
+    "judge_workers": 4,
+    "judge_rpm": 12,
+    "judge_tpm": 8000,
+    "success_threshold": 0.3,
+    "success_operator": ">="
+  },
+  "method_settings": {
+    "o_attack": {
+      "seed": 2023,
+      "alpha": 1.0,
+      "batch_size": 1,
+      "overrides": {}
+    },
+    "m_attack_v2": {
+      "seed": 2023,
+      "alpha": 0.005,
+      "batch_size": 10,
+      "overrides": {}
+    }
+  },
+  "retrieval": {
+    "reference_root": "",
+    "coco_zip_url": "https://s3.amazonaws.com/images.cocodataset.org/zips/train2014.zip",
+    "coco_sha256": "ede4087e640bddba550e090eae701092534b554b42b05ac33f0300b984b31775",
+    "allow_download": true
+  },
+  "verify_first_batch": true
+}

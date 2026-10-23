@@ -1,0 +1,11 @@
+{
+  "old_tf457": {
+    "expected_return_dict_typeerror_reproduced": true
+  },
+  "fixed_tf4513": {
+    "transformers": "4.51.3",
+    "torch": "2.10.0+cu128",
+    "author_forward_arguments_accepted": true,
+    "amp_input_gradient_finite": true
+  }
+}

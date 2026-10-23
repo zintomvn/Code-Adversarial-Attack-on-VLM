@@ -1,0 +1,9 @@
+{
+  "official_files_verified": 35,
+  "original_caption_banks_cover_cohort": true,
+  "interrupted_coco_extraction_recovers": true,
+  "batch_rng_json_roundtrip": true,
+  "whole_batch_restores_in_fresh_root": true,
+  "corrupt_sample_rejected": true,
+  "portable_notebooks_parse": true
+}

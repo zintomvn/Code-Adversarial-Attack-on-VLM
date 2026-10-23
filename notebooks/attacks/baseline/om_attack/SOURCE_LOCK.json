@@ -1,0 +1,49 @@
+{
+  "o_attack": {
+    "repository": "https://github.com/Summu77/O-Attack",
+    "commit": "5585398e89a4d3415d0f29ff924368e8ba3c9cef",
+    "files": {
+      "oattack/attacks.py": "0d36f6c0bf5047255fc3be067582e709bc1abf9c1e9502e4c9f46fd1729a82ac",
+      "oattack/augmentations.py": "67ba55006e68b7984adc183fd556f7fc454fb576c60d5c999ade1bdedaa6dfe4",
+      "oattack/paths.py": "8f2777ddf4c9d750e81725f9edf993be3bb9a92d74e4cfc0c67922b01e34dc63",
+      "oattack/run.py": "c1843f8706a5e07a98440e5775feb9ad2f4a432600abf90a5abb70560182dcc4",
+      "oattack/runtime.py": "aee4426b889e1faaa3864cb3bce571814407b61ac7d48c1aebbcbd8e4110badf",
+      "oattack/utils.py": "067985d5d3e8a65260a9485982e09a46fc1a5a2c1aac92292ab0c532963b32c1",
+      "oattack/__init__.py": "4f549bfb27911b8d5dcd40f39eec04f568e269edc9995faa50d008fef574bc61",
+      "oattack/data/datasets.py": "d0a21e62c86969ac216d71138a93d2dc47efc323ce23ec0ed7f8efabfb9045d6",
+      "oattack/data/__init__.py": "080dcee426ef8a7bf4212fe5ec30d7aaf6649dc56a351f9bc6cf8209c552cdaa",
+      "oattack/models/base.py": "a1bc7ed4a07d1b443549ca0fdc0976782926e83e5073ee4557491c2fdef348eb",
+      "oattack/models/clip_extractors.py": "aca2054921742c459da1a6bf2d4f93cb23fb8e579e9507a2f039d593f1b58c68",
+      "oattack/models/__init__.py": "e3924399ad6ba2f22e12d8aba0aecfe0a6b09999c3667bcf7c7290f597f45aab",
+      "configs/attack/default.yaml": "ccf7d8aabc4c86f08fd621756fbbaae2ece2713d86777f2e4ccad23fec16131b",
+      "requirements.txt": "2a64ca43ccb38d6069661bd3ed5705c77989a5d4a847d29d6ba986c314b0d8d5",
+      "data/text/target_images_1000/1/caption.json": "09149e8633bac173a6ca873d849221fef8aa1f982649c61538dbdb4f46fee59c",
+      "data/text/target_images/1/caption.json": "b2b161a697d381e2ef7d2dd052e78178cd2ebdac3f487e37c18da082dff4d909",
+      "data/text/bigscale_1000/nips17/caption.json": "1d9b8cdb8b899d4230abbbe57a297e33818c339222d2e915dd126eba303263f5",
+      "data/text/bigscale/nips17/caption.json": "b9ac7afaf8fcce8d406484852c1492de3eb9aef5f97cad6d3bcf3f5eaceb1b07"
+    }
+  },
+  "m_attack_v2": {
+    "repository": "https://github.com/VILA-Lab/M-Attack-V2",
+    "commit": "8faca6d95e1caa190d676575489ab81bb31e4d03",
+    "files": {
+      "attack/base.py": "0e1c0cf054c045b2eb0ab47916e2af372e876690d2a68bc485e4c4bcfe42f2aa",
+      "attack/__init__.py": "59132cdce654997e3f43ffabdeaccf3c343d52635824e9f5161946ac71b9c5fb",
+      "surrogates/loss.py": "42dd51e997246380951e48323c79c25eb13d90e811dc5c6a7c1c4ce01d7add87",
+      "surrogates/__init__.py": "4f97b29922a7e93ef2ad046dc2cbb39656171f6e14a2a47e6246e5013a7a46ca",
+      "surrogates/FeatureExtractors/base.py": "e8679f5bb70f6b724e02217e7bed013db819ffc71fce65c331fc368d8338d257",
+      "surrogates/FeatureExtractors/blip1.py": "4bdcaf748828ccae36bf36377dffe549f95264674844cac3c984da8097ecd8c8",
+      "surrogates/FeatureExtractors/blip2.py": "685cf5a6442c6c9d8e0f54722c148c42d0d2832d0f43e75d7e289990ab7ec28b",
+      "surrogates/FeatureExtractors/clip.py": "8b7b176071231999835708e87b612b6a69abe2c09f7948af6d558648259792a2",
+      "surrogates/FeatureExtractors/dino.py": "fbceaa2debfedc25660a639f46b126be53d77628665a24d02d8d8f28be30d5cf",
+      "surrogates/FeatureExtractors/vit.py": "8df1d1ab82c2881e9165a9f9cb4904c5633a7e7b065b166d54074f2b65cbd1f6",
+      "surrogates/FeatureExtractors/__init__.py": "52d60f0fca0911988cd1d0b011cc7340b405f8bc06d381e273b264cc732511d2",
+      "generate_ad_sample_parallel.py": "2927e1a5686f43fe4706341244586238b8a999b4566af94728dd6b88774e71a8",
+      "config_schema.py": "0ce8f3bc5cdc3af49a0bce16ddc3094c1de7ba615365a7d77b3f1633ef7b3fea",
+      "utils.py": "3726ffb9731c53bfdef49768b7d708cbac9ce67dba796e45dadd2f53fca4836b",
+      "retrieval.py": "729440dd593d5e50e9efe1917cbe633aef86d01cba16930ac287d1519753d694",
+      "config/ensemble_3models.yaml": "4ef751e955472646f0eb7349939befb1df8c245407e49f1263908c48bdc1c71b",
+      "pyproject.toml": "21d850ac1390a1baf162f0da94f3f32dadf337664b175cc24b2088030d203429"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "baseline_source": "official pinned commits; local edits are preserved and excluded",
+  "local_differences": [
+    "o_attack/oattack/attacks.py"
+  ]
+}
