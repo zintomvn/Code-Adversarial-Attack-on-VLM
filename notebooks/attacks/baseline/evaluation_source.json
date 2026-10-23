@@ -1,0 +1,10 @@
+{
+  "notebook": "notebooks/text_gen_eval_v3.2.ipynb",
+  "notebook_sha256": "579f77f2583c5a657ec87eed8a7d289783a219c025daff020be27d98f6110aa9",
+  "extracted_cells": [
+    5,
+    6,
+    7
+  ],
+  "protocol_sha256": "bef7693aa3a84a10b5e12196996134a03d620cb3fbacfbace1fffaf73a7b8e72"
+}

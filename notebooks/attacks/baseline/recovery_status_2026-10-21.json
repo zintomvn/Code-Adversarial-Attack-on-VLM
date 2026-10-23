@@ -1,0 +1,46 @@
+{
+  "verified_utc": "2026-10-21T06:44:52.960351+00:00",
+  "status": {
+    "stage": {
+      "stage": "attacking",
+      "updated_unix": 1792564911.3851678,
+      "method": "saga",
+      "completed": 0,
+      "total": 200
+    },
+    "attacks": [
+      {
+        "method": "foa",
+        "completed": 200,
+        "expected": 200
+      },
+      {
+        "method": "mpc",
+        "completed": 200,
+        "expected": 200
+      },
+      {
+        "method": "saga",
+        "completed": 1,
+        "expected": 200
+      }
+    ]
+  },
+  "remote_saga_archives": 1,
+  "watchdog": {
+    "stage": "watching_existing_controller",
+    "updated_unix": 1792564967.7540734,
+    "retries": 0,
+    "max_retries": 5,
+    "supervisor_pid": 707,
+    "supervisor_source_sha256": "f4096a45483854845d38739bdfaf195c3fcc2ce2a661ea96d4fabafd7324d3ff",
+    "run_fingerprint": "abb836796df201850ff607625b914d995429a27cf24a65116678f9359bba3cbc"
+  },
+  "run_fingerprint": "abb836796df201850ff607625b914d995429a27cf24a65116678f9359bba3cbc",
+  "controller_pid": 565,
+  "openai_key_available": true,
+  "gemini_key_available": false,
+  "notebook_url": "https://molab.marimo.io/notebooks/nb_B6DAdejhFQbHtZmtME5F8q",
+  "subsequent_live_saga_completed": 2,
+  "latest_gpu_utilization_percent": 92
+}

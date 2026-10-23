@@ -1,0 +1,17 @@
+{
+  "author_files_verified": 65,
+  "pairs_validated": 200,
+  "unique_sources": 200,
+  "original_author_fgsm_resume_exact_cpu": true,
+  "rng_roundtrip_python_numpy_torch": true,
+  "perturbation_budget": 16,
+  "restored_manifest_reconstructed": true,
+  "corrupt_checkpoint_rejected": true,
+  "evaluation_classes_verbatim_v32": true,
+  "notebooks_nbformat_valid": true,
+  "marimo_graph_no_errors": true,
+  "zip_traversal_rejected": true,
+  "rng_json_roundtrip": true,
+  "evaluation_protocol_hash_matches": true,
+  "verification_command": "python notebooks/attacks/baseline/verify_baselines.py --data outputs/molab_hypotheses_n200/attack_data_n200.zip"
+}

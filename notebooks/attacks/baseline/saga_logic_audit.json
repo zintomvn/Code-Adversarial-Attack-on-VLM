@@ -1,0 +1,439 @@
+{
+  "verified_utc": "2026-10-21T17:10:16.187996+00:00",
+  "upstream_repository": "https://github.com/jaehyun-kwak/SAGA",
+  "frozen_commit": "042274599b958d4d63760b9bf44bbcb88493811c",
+  "remote_head": "042274599b958d4d63760b9bf44bbcb88493811c",
+  "remote_head_matches_frozen": true,
+  "file_count": 23,
+  "files": [
+    {
+      "file": "MANIFEST.sha256",
+      "locked_sha256": "26fa6154aacfb183635cf696109322428af0687425452b4e06753a3dda193931",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true
+    },
+    {
+      "file": "attack.py",
+      "locked_sha256": "2271774324e37a0417dc294aa7c06cf1cafd6e783ec1cbc97595af01049f245d",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "input/coco.jsonl",
+      "locked_sha256": "960f410d7406dd3f9caf56e7be8a9de1284c0bdd9e0f1a17de265ebb8c67320b",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true
+    },
+    {
+      "file": "input/coco.txt",
+      "locked_sha256": "48c0674f22472138ebcc971f07370159f35eec8f1783fa998dd8dcc3657ad865",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true
+    },
+    {
+      "file": "pyproject.toml",
+      "locked_sha256": "7a40db1b6694e66eb8237189f2cc2ca075c9bc1103ae0d5d1133796aeb911b9d",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true
+    },
+    {
+      "file": "saga/__init__.py",
+      "locked_sha256": "af64b7f7b8ead13b3831f16c1536293ad2ad88ccff503726d96cea6e89fd975f",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/attention.py",
+      "locked_sha256": "3db23573a2e828e1b0dc03282784576f19fb1c1632d6c4d0a8714293e486447e",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/attention_map.py",
+      "locked_sha256": "5ff1367599486a1a18d98107dbd2d65180aaa29842ac9f1c64b486e061f0958a",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/attention_utils.py",
+      "locked_sha256": "542a0bfad55649c291ca382d756c59bde18f7206237ca8f25fab3564d1811f0d",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/cli.py",
+      "locked_sha256": "814b144b6bb0d4037d96c142c07d2739275e188aafd644d31cf83ccd1d052de3",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/crops.py",
+      "locked_sha256": "fdbded794d181dbf8359c14c918700182d6a405bc2972b99f2909706bc20d44c",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/data.py",
+      "locked_sha256": "7848413e8981842579f61a9d22977611b9506e14ac4c2ae743fb3c2e35d0529b",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/hotspots.py",
+      "locked_sha256": "96a2d117291af0b9283b3a91f819effa16ee0d2f4741553d7e6fc9ad9250fd67",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/optimization.py",
+      "locked_sha256": "9b2cdc0608cd0f51ae8da3d18ba5d747a7085c28a3cd591dd86e602c2a12a307",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": false,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/pipeline.py",
+      "locked_sha256": "ea59311912349d111355cb1df6deefb157964f155e13c46ac11d312b8be8de7d",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/surrogates/__init__.py",
+      "locked_sha256": "c289ca25945449dbae78b767ca07cb9c26b9126ab5be773f71029110480e5928",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/surrogates/base.py",
+      "locked_sha256": "1166a2f49d5219917b9e5b20586abe05899e69f7fc6214d76148ff769f3ed409",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/surrogates/clipb16.py",
+      "locked_sha256": "0249de04470cd0720cae89f95adc426a463ffc07260ec8c59918ffffbe7003b7",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/surrogates/clipb32.py",
+      "locked_sha256": "d95395641b3a15b0c729fe46d6a6a91a61b406eab58c44c96ca64b60e3713b7e",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/surrogates/cliplaion.py",
+      "locked_sha256": "92f5529de59ebb6e14292762b35b0e75112ee11ce986f43016464e270d2dc934",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "saga/text.py",
+      "locked_sha256": "48843e8493179274daafb753ae0fcd75833e4888f5e8a6bb19092c2af7e78e8a",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true,
+      "local_ast_matches_git": true
+    },
+    {
+      "file": "scripts/run_saga.sh",
+      "locked_sha256": "fd2c24f15b3d55981b0834ce532b139d3bc44776e2c8e507bf8516dfe7dcf7b3",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true
+    },
+    {
+      "file": "uv.lock",
+      "locked_sha256": "1358a84ca3511930afd977360cb4ef7d7f74352bbba172e9a95a9e5a5c12e2af",
+      "git_matches_lock": true,
+      "bundle_matches_git": true,
+      "local_matches_git_normalized": true
+    }
+  ],
+  "schedule_examples": [
+    {
+      "grid": [
+        7,
+        7
+      ],
+      "map": "uniform",
+      "schedule_items": 22,
+      "per_stage_counts": {
+        "1": 3,
+        "2": 3,
+        "4": 3,
+        "5": 3,
+        "6": 3,
+        "7": 3,
+        "9": 3,
+        "10": 1
+      },
+      "steps_per_item": 13,
+      "last_item_steps": 27,
+      "iou_cap_violating_stages": [
+        {
+          "stage": 5,
+          "max_pair_iou": 0.6666666666666666
+        },
+        {
+          "stage": 6,
+          "max_pair_iou": 0.7142857142857143
+        },
+        {
+          "stage": 7,
+          "max_pair_iou": 0.6666666666666666
+        },
+        {
+          "stage": 9,
+          "max_pair_iou": 0.75
+        }
+      ]
+    },
+    {
+      "grid": [
+        7,
+        7
+      ],
+      "map": "random_seed_43",
+      "schedule_items": 22,
+      "per_stage_counts": {
+        "1": 3,
+        "2": 3,
+        "4": 3,
+        "5": 3,
+        "6": 3,
+        "7": 3,
+        "9": 3,
+        "10": 1
+      },
+      "steps_per_item": 13,
+      "last_item_steps": 27,
+      "iou_cap_violating_stages": [
+        {
+          "stage": 6,
+          "max_pair_iou": 0.7142857142857143
+        },
+        {
+          "stage": 7,
+          "max_pair_iou": 0.5555555555555556
+        },
+        {
+          "stage": 9,
+          "max_pair_iou": 0.75
+        }
+      ]
+    },
+    {
+      "grid": [
+        14,
+        14
+      ],
+      "map": "uniform",
+      "schedule_items": 28,
+      "per_stage_counts": {
+        "1": 3,
+        "2": 3,
+        "3": 3,
+        "4": 3,
+        "5": 3,
+        "6": 3,
+        "7": 3,
+        "8": 3,
+        "9": 3,
+        "10": 1
+      },
+      "steps_per_item": 10,
+      "last_item_steps": 30,
+      "iou_cap_violating_stages": [
+        {
+          "stage": 5,
+          "max_pair_iou": 0.8181818181818182
+        },
+        {
+          "stage": 6,
+          "max_pair_iou": 0.8333333333333334
+        },
+        {
+          "stage": 7,
+          "max_pair_iou": 0.8333333333333334
+        },
+        {
+          "stage": 8,
+          "max_pair_iou": 0.8571428571428571
+        },
+        {
+          "stage": 9,
+          "max_pair_iou": 0.8666666666666667
+        }
+      ]
+    },
+    {
+      "grid": [
+        14,
+        14
+      ],
+      "map": "random_seed_43",
+      "schedule_items": 28,
+      "per_stage_counts": {
+        "1": 3,
+        "2": 3,
+        "3": 3,
+        "4": 3,
+        "5": 3,
+        "6": 3,
+        "7": 3,
+        "8": 3,
+        "9": 3,
+        "10": 1
+      },
+      "steps_per_item": 10,
+      "last_item_steps": 30,
+      "iou_cap_violating_stages": [
+        {
+          "stage": 5,
+          "max_pair_iou": 0.822429906542056
+        },
+        {
+          "stage": 6,
+          "max_pair_iou": 0.8396946564885496
+        },
+        {
+          "stage": 7,
+          "max_pair_iou": 0.8333333333333334
+        },
+        {
+          "stage": 8,
+          "max_pair_iou": 0.8571428571428571
+        },
+        {
+          "stage": 9,
+          "max_pair_iou": 0.8666666666666667
+        }
+      ]
+    },
+    {
+      "grid": [
+        24,
+        24
+      ],
+      "map": "uniform",
+      "schedule_items": 28,
+      "per_stage_counts": {
+        "1": 3,
+        "2": 3,
+        "3": 3,
+        "4": 3,
+        "5": 3,
+        "6": 3,
+        "7": 3,
+        "8": 3,
+        "9": 3,
+        "10": 1
+      },
+      "steps_per_item": 10,
+      "last_item_steps": 30,
+      "iou_cap_violating_stages": [
+        {
+          "stage": 5,
+          "max_pair_iou": 0.8571428571428571
+        },
+        {
+          "stage": 6,
+          "max_pair_iou": 0.9130434782608695
+        },
+        {
+          "stage": 7,
+          "max_pair_iou": 0.8947368421052632
+        },
+        {
+          "stage": 8,
+          "max_pair_iou": 0.9130434782608695
+        },
+        {
+          "stage": 9,
+          "max_pair_iou": 0.9166666666666666
+        }
+      ]
+    },
+    {
+      "grid": [
+        24,
+        24
+      ],
+      "map": "random_seed_43",
+      "schedule_items": 28,
+      "per_stage_counts": {
+        "1": 3,
+        "2": 3,
+        "3": 3,
+        "4": 3,
+        "5": 3,
+        "6": 3,
+        "7": 3,
+        "8": 3,
+        "9": 3,
+        "10": 1
+      },
+      "steps_per_item": 10,
+      "last_item_steps": 30,
+      "iou_cap_violating_stages": [
+        {
+          "stage": 5,
+          "max_pair_iou": 0.9090909090909091
+        },
+        {
+          "stage": 6,
+          "max_pair_iou": 0.8823529411764706
+        },
+        {
+          "stage": 7,
+          "max_pair_iou": 0.9166666666666666
+        },
+        {
+          "stage": 8,
+          "max_pair_iou": 0.9130434782608695
+        },
+        {
+          "stage": 9,
+          "max_pair_iou": 0.9183303085299456
+        }
+      ]
+    }
+  ],
+  "caveat": "Synthetic maps demonstrate release behavior; actual run schedules may vary by image. No GPU rerun or remote runtime rehash in this audit."
+}

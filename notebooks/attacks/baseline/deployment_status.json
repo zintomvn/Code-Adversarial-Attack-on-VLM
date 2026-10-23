@@ -1,0 +1,139 @@
+{
+  "notebook_url": "https://molab.marimo.io/notebooks/nb_B6DAdejhFQbHtZmtME5F8q",
+  "run_name": "official_n200_e16_s300_drive_v6",
+  "n": 200,
+  "epsilon": 16,
+  "steps": 300,
+  "status": {
+    "stage": {
+      "stage": "evaluation_pending",
+      "pending_models": [
+        {
+          "model": "Gemini 2.5 Flash",
+          "exit_code": 76
+        }
+      ]
+    },
+    "attacks": [
+      {
+        "method": "foa",
+        "completed": 200,
+        "expected": 200
+      },
+      {
+        "method": "mpc",
+        "completed": 200,
+        "expected": 200
+      },
+      {
+        "method": "saga",
+        "completed": 200,
+        "expected": 200
+      }
+    ]
+  },
+  "verified_utc": "2026-10-21 16:53:35 UTC",
+  "openai_key_available": true,
+  "gemini_key_available": false,
+  "drive_folder": {
+    "id": "1Il5IYKz9DpheZ17QF2knllt5B_VrRjWh",
+    "name": "official_n200_e16_s300_drive_v6",
+    "webViewLink": "https://drive.google.com/drive/folders/1Il5IYKz9DpheZ17QF2knllt5B_VrRjWh"
+  },
+  "durable_foa_checkpoints": 5,
+  "checkpoint_roundtrip_sha256_equal": true,
+  "first_checkpoint": {
+    "md5Checksum": "b5785a07a5fa600ae95cae9612de7ede",
+    "mimeType": "application/zip",
+    "size": "295806",
+    "id": "13at_4bOtKrgsYw-5k_O7n_bH59j5fq3m",
+    "name": "00000.zip"
+  },
+  "first_saved_png_linf_0_255": 16,
+  "preflight": {
+    "mpc_original_cli_imports": true,
+    "saga_official_input_check": 200
+  },
+  "overall_status": "evaluation_pending_gemini_only",
+  "evaluation_started": true,
+  "mpc_attack_started": true,
+  "saga_attack_started": true,
+  "source_bundle_sha256": "027385e843b8be044f7577befdcab123ef74136f435b2dba890e296e56cd377a",
+  "notes": [
+    "All attacks complete: 200 images per method.",
+    "All four models with available credentials completed caption generation and GPT-score evaluation.",
+    "Latest controller stage has only Gemini 2.5 Flash pending (exit 76); GPT-5 mini completed with 600 successful unique scores and zero errors.",
+    "Compute is idle; Gemini remains deferred as requested."
+  ],
+  "last_resumed_check_utc": "2026-10-21T07:38:30.660915+00:00",
+  "latest_gpu_utilization_percent": 88,
+  "storage_watchdog": {
+    "enabled": true,
+    "stage": "watching_existing_controller",
+    "updated_unix": 1792564967.7540734,
+    "retries": 0,
+    "max_retries": 5,
+    "supervisor_pid": 707,
+    "supervisor_source_sha256": "f4096a45483854845d38739bdfaf195c3fcc2ce2a661ea96d4fabafd7324d3ff",
+    "run_fingerprint": "abb836796df201850ff607625b914d995429a27cf24a65116678f9359bba3cbc"
+  },
+  "previous_notebook_url": "https://molab.marimo.io/notebooks/nb_oKkjtn1RrUc7gDm3bdGRsR",
+  "recovery_verification": {
+    "verified_utc": "2026-10-21T07:38:30.660915+00:00",
+    "status": {
+      "stage": {
+        "stage": "attacking",
+        "updated_unix": 1792564911.3851678,
+        "method": "saga",
+        "completed": 0,
+        "total": 200
+      },
+      "attacks": [
+        {
+          "method": "foa",
+          "completed": 200,
+          "expected": 200
+        },
+        {
+          "method": "mpc",
+          "completed": 200,
+          "expected": 200
+        },
+        {
+          "method": "saga",
+          "completed": 96,
+          "expected": 200
+        }
+      ]
+    },
+    "remote_saga_archives": 96,
+    "watchdog": {
+      "stage": "watching_existing_controller",
+      "updated_unix": 1792564967.7540734,
+      "retries": 0,
+      "max_retries": 5,
+      "supervisor_pid": 707,
+      "supervisor_source_sha256": "f4096a45483854845d38739bdfaf195c3fcc2ce2a661ea96d4fabafd7324d3ff",
+      "run_fingerprint": "abb836796df201850ff607625b914d995429a27cf24a65116678f9359bba3cbc"
+    },
+    "run_fingerprint": "abb836796df201850ff607625b914d995429a27cf24a65116678f9359bba3cbc",
+    "controller_pid": 565,
+    "openai_key_available": true,
+    "gemini_key_available": false
+  },
+  "evaluation_progress": {
+    "completed_models": [
+      "LLaVA-1.5-7B",
+      "InternVL3-8B",
+      "Qwen3-VL-8B",
+      "GPT-5 mini"
+    ],
+    "judged_pairs_per_completed_model": 600,
+    "gpt5_mini": {
+      "captions_ok": 894,
+      "unique_scores_ok": 600,
+      "errors": 0
+    },
+    "gemini": "key_pending_deferred"
+  }
+}
