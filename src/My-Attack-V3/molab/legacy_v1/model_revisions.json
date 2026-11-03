@@ -1,0 +1,9 @@
+{
+  "openai/clip-vit-base-patch16": "57c216476eefef5ab752ec549e440a49ae4ae5f3",
+  "openai/clip-vit-base-patch32": "3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268",
+  "laion/CLIP-ViT-G-14-laion2B-s12B-b42K": "4b0305adc6802b2632e11cbe6606a9bdd43d35c9",
+  "OpenGVLab/InternVL3-1B-hf": "014c0583a0d4bedf29fbe2dbff4f865eb998e171",
+  "facebook/dinov2-base": "f9e44c814b77203eaa57a6bdbbd535f21ede1415",
+  "Qwen/Qwen3-VL-8B-Instruct": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+  "Qwen/Qwen2.5-VL-3B-Instruct": "66285546d2b821cf421d4f5eb2576359d3770cd3"
+}
