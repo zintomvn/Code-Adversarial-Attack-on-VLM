@@ -2,7 +2,7 @@
 
 Notebook Molab: [official_om_molab.py](official_om_molab.py). Notebook Jupyter/Kaggle: [official_om_kaggle.ipynb](official_om_kaggle.ipynb). Cấu hình mẫu: [default_config.json](default_config.json).
 
-Phiên mới: [Official O-Attack + M-Attack-V2 v4 trên Molab](https://molab.marimo.io/notebooks/nb_NRE5b1ieMbBcgmP6pPV2HZ). Controller v4 đã khởi động; [folder kết quả v4 trên Drive](https://drive.google.com/drive/folders/13bB-pBlCpevcn3rn2qdWXiLEDRHUrQQ2) chứa retrieval đủ 200 target và bản release notebook. Kết quả lịch sử của run `official_om_n200_e16_s300_v3`: [Drive v3](https://drive.google.com/drive/folders/1S6VZfKXFycU92-S58IVziNrn9yFeuQSF), gồm checkpoint O-Attack một mẫu. Tiến độ xác nhận được ghi riêng trong [deployment_status.json](deployment_status.json); chưa hoàn tất 200 mẫu hay đánh giá cho hai attack mới.
+Phiên mới: [Official O-Attack + M-Attack-V2 v4 trên Molab](https://molab.marimo.io/notebooks/nb_NRE5b1ieMbBcgmP6pPV2HZ). Cả hai attack đã hoàn tất 200/200 mẫu, epsilon=16, 300 bước. [Folder kết quả v4 trên Drive](https://drive.google.com/drive/folders/13bB-pBlCpevcn3rn2qdWXiLEDRHUrQQ2) chứa manifest, checkpoint, retrieval và bản release notebook. Evaluation đang được tiếp tục; Qwen đã hoàn tất, các model còn lại chưa hoàn tất toàn bộ. Tiến độ xác nhận được ghi riêng trong [deployment_status.json](deployment_status.json). Kết quả lịch sử của run `official_om_n200_e16_s300_v3` nằm ở [Drive v3](https://drive.google.com/drive/folders/1S6VZfKXFycU92-S58IVziNrn9yFeuQSF).
 
 Folder `release/` của run trên Drive chứa source notebook Molab đã triển khai, bundle code và `SOURCE_LOCK.json`. Source được kiểm tra không chứa giá trị khóa API trước khi xuất; `.env` và OAuth credentials không nằm trong release. License MIT gốc của M-Attack-V2 đi kèm bundle và [M_ATTACK_V2_LICENSE.txt](M_ATTACK_V2_LICENSE.txt).
 
@@ -56,6 +56,8 @@ Retrieval hoàn tất được lưu riêng thành `assets/retrieval.zip` trong f
 ## Đánh giá và thêm paper sau này
 
 Sau hai attack, pipeline dùng lại evaluator v3.2 đã khóa của thí nghiệm cũ: LLaVA-1.5-7B, InternVL3-8B, Qwen3-VL-8B, Gemini 2.5 Flash, GPT-5 mini; judge GPT-4o, mặc định ASR >=0.3. Đây là protocol chung của dự án, không phải protocol paper của từng tác giả. Gemini thiếu khóa được ghi pending; các model còn lại vẫn chạy.
+
+Phiên evaluation được tiếp tục ngày 24/10/2026 sau khi khôi phục đủ 200 mẫu cho mỗi attack từ Drive. Script vận hành [retry_partial_evaluations.py](retry_partial_evaluations.py) có thể đặt trong `validation/` của runtime: nó chờ controller hiện tại kết thúc, rồi thử lại mỗi model chưa hoàn tất tối đa một lần bằng worker gốc. Script không đổi prompt, token budget, quantization, rubric hay các checkpoint thành công; thiếu API key thì giữ pending. Caption vẫn bị cắt sau lượt thử lại tiếp tục được ghi lỗi, không thay bằng caption rỗng hay tính thành công. Không đặt script này ở thư mục gốc của frozen bundle vì sẽ thay danh tính runner.
 
 Muốn thêm method: bổ sung source/commit và hash trong `build_release.py`, profile environment/adapter trong `campaign_runtime.REGISTRY`, adapter I/O mới trong `campaign_worker.py`, rồi build và kiểm tra. Giữ các hàm attack của tác giả nguyên bản. Tạo run mới khi cập nhật bundle.
 

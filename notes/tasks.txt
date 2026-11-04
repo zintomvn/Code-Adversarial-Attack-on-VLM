@@ -31,15 +31,15 @@ Baseline
     + SAGA 
     + MPC Attack  
     + FOA 
-
-- Chạy 2 baseline năm nay:
+- Chạy 2 baseline năm nay x
     + O-Attack
     + M-Attack-V2
 
-
 - Chia thành từng thực nghiệm để chạy thay vì chạy trên 1 notebook - lập bảng thực nghiệm x
-- Chạy thực nghiệm H1
-    + concept 
+- Fix the stage generate diffusion image from Thịnh v6.4-cara x
+- Sửa notebook thực nghiệm v6.4-cara -> 
+- Run experiment v6.4-cara
+
 
 - Summarize literature review of hypothesis --> tạo table to check experiment 
     + H1 - Hard negative concepts - Constructing attack-specific negative concepts based on visual evidence and failure cases, rather than generic incorrect captions

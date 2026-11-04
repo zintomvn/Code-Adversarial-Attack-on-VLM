@@ -1,0 +1,29 @@
+{
+  "repository": "https://github.com/LiYuanBoJNU/MPCAttack",
+  "commit": "7b195a5bcbaeaf1e8534d101199810a2782caad3",
+  "files": {
+    "surrogates/FeatureExtractors/ClipB16.py": {
+      "upstream_sha256": "fff34f53b6d574baf08c85a16ed8a4332e2e0ebbd4ba7b03ceb18dbe553e71e3",
+      "changes": "Explicit revision pin; original forward/preprocessing retained."
+    },
+    "surrogates/FeatureExtractors/ClipB32.py": {
+      "upstream_sha256": "6d27a385383ae8ab1b792b5d41216e914bd3286c465c2f0f6616483061216132",
+      "changes": "Explicit revision pin; original forward/preprocessing retained."
+    },
+    "surrogates/FeatureExtractors/ClipLaion.py": {
+      "upstream_sha256": "c1189888e08edb24ed8ed5c4e740f12018b1c2b969dc8757eca3f97dd3778ea5",
+      "changes": "Explicit revision pin; original forward/preprocessing retained."
+    },
+    "surrogates/FeatureExtractors/InternVL3_1B.py": {
+      "upstream_sha256": "1e71c0c4ff0b96206db5b7316cf57d5fc053d80ba6a527f2bc6505842626b684",
+      "changes": "Explicit revision pin; original forward/preprocessing retained."
+    },
+    "surrogates/FeatureExtractors/DINOv2_Base.py": {
+      "upstream_sha256": "bc2d442c1b81001bd2658622ba5f2e3af04f656dafe98c02eecb88a1aa0e15e5",
+      "changes": "Explicit revision pin; original forward/preprocessing retained."
+    },
+    "Base.py": {
+      "changes": "Only BaseFeatureExtractor and EnsembleFeatureExtractor_our copied verbatim; unrelated classes/imports omitted."
+    }
+  }
+}

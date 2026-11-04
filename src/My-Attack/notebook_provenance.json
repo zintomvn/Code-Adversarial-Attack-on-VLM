@@ -1,0 +1,29 @@
+{
+  "notebook": "notebooks\\attacks\\v5.3-diffusion-regions.ipynb",
+  "source_sha256": "cac10cb467361cd9d4ff0e8e4343e26ebb1ccfd708bda52daafbe8d7b5d1b4b3",
+  "exported_cells": [
+    10,
+    32,
+    34,
+    36,
+    40,
+    62,
+    64,
+    66,
+    68,
+    70,
+    72,
+    74,
+    76
+  ],
+  "changes": [
+    "module-qualified config",
+    "optional USD/time caps",
+    "manual review pauses disabled by user",
+    "native checkpoint callback",
+    "artifact-only plots closed after saving",
+    "reuse frozen model instances on GPUs with >=80GiB VRAM",
+    "shared victim loading across both arms",
+    "separate direct Python orchestration and stage CLI"
+  ]
+}

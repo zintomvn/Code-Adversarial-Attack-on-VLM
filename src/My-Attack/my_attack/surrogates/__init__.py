@@ -1,0 +1,1 @@
+"""Frozen CLIP surrogate encoders."""

@@ -1,0 +1,25 @@
+{
+  "m_attack_v2": {
+    "commit": "8faca6d95e1caa190d676575489ab81bb31e4d03",
+    "files": {
+      "attack/__init__.py": "59132cdce654997e3f43ffabdeaccf3c343d52635824e9f5161946ac71b9c5fb",
+      "attack/base.py": "0e1c0cf054c045b2eb0ab47916e2af372e876690d2a68bc485e4c4bcfe42f2aa",
+      "config/ensemble_3models.yaml": "4ef751e955472646f0eb7349939befb1df8c245407e49f1263908c48bdc1c71b",
+      "config_schema.py": "0ce8f3bc5cdc3af49a0bce16ddc3094c1de7ba615365a7d77b3f1633ef7b3fea",
+      "generate_ad_sample_parallel.py": "2927e1a5686f43fe4706341244586238b8a999b4566af94728dd6b88774e71a8",
+      "pyproject.toml": "21d850ac1390a1baf162f0da94f3f32dadf337664b175cc24b2088030d203429",
+      "retrieval.py": "729440dd593d5e50e9efe1917cbe633aef86d01cba16930ac287d1519753d694",
+      "surrogates/FeatureExtractors/__init__.py": "52d60f0fca0911988cd1d0b011cc7340b405f8bc06d381e273b264cc732511d2",
+      "surrogates/FeatureExtractors/base.py": "e8679f5bb70f6b724e02217e7bed013db819ffc71fce65c331fc368d8338d257",
+      "surrogates/FeatureExtractors/blip1.py": "4bdcaf748828ccae36bf36377dffe549f95264674844cac3c984da8097ecd8c8",
+      "surrogates/FeatureExtractors/blip2.py": "685cf5a6442c6c9d8e0f54722c148c42d0d2832d0f43e75d7e289990ab7ec28b",
+      "surrogates/FeatureExtractors/clip.py": "8b7b176071231999835708e87b612b6a69abe2c09f7948af6d558648259792a2",
+      "surrogates/FeatureExtractors/dino.py": "fbceaa2debfedc25660a639f46b126be53d77628665a24d02d8d8f28be30d5cf",
+      "surrogates/FeatureExtractors/vit.py": "8df1d1ab82c2881e9165a9f9cb4904c5633a7e7b065b166d54074f2b65cbd1f6",
+      "surrogates/__init__.py": "4f97b29922a7e93ef2ad046dc2cbb39656171f6e14a2a47e6246e5013a7a46ca",
+      "surrogates/loss.py": "42dd51e997246380951e48323c79c25eb13d90e811dc5c6a7c1c4ce01d7add87",
+      "utils.py": "3726ffb9731c53bfdef49768b7d708cbac9ce67dba796e45dadd2f53fca4836b"
+    },
+    "repository": "https://github.com/VILA-Lab/M-Attack-V2"
+  }
+}

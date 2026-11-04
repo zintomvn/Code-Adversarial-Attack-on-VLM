@@ -11,7 +11,7 @@
 - Idea 2 [Data]: Dùng text và lấy text grounding ra làm vùng miêu chạy sinh nhiễu
   - Idea 2.1 [Preprocessing+Sequence]: 
     + dùng attention grounding của CLIP theo concept nhỏ
-    + Dùng  
+    +  
 
 
 - Idea 3 [Preprocessing+Sequence]: Dùng dynamic update thay vì fixed salient region (thay cho random crop) tức là train theo dạng chuỗi ảnh thay đổi và lấy thông tin thay đổi cho lần tối ưu tiếp theo
@@ -33,11 +33,33 @@
 - Idea 6 [Data]: 
 
 
+- Causal Concept-Guided Transfer Attack
+CaCE + SpLiCE + Text2Concept
+
+
+- loss for concept
+
+\[
+\mathcal{L}_{total}
+=
+\alpha\mathcal{L}_{global}
++\beta\mathcal{L}_{concept}
++\gamma\mathcal{L}_{region}
+\]
+
+\[
+\begin{aligned}
+
+\mathcal{L}_{concept}
+={}&-\sum_{c\in T}w_c\,s_m(x_{adv},c)\\
+&+\lambda_s\sum_{c\in S}u_c\,s_m(x_{adv},c)\\
+&+\lambda_p\sum_{c\in P}
+\big[s_m(x_{adv},c)-s_m(x,c)\big]^2
+\end{aligned}
+\]
+
 Raw idea: ^^
   + Dynamic concept crop
-
-
-
 
 ## Hypothesis
 ### Hypothesis:
@@ -127,7 +149,7 @@ References:
 + Dùng data MSCOCO
 + [local text] Chạy concept trên nhiều ảnh --> dùng local features của text caption --> embedding --> text vector
   + Encoder:
-    + Ảnh --> concept caption --> attention region --> 
+    + Ảnh --> concept caption --> attention region
 + [local image] Chạy concept trên nhiều ảnh --> grounding --> embedding --> local image vector  
 
 - H9: [Global and local update perturbation]
@@ -137,6 +159,20 @@ References:
     + Case 2: Theo concept attention cho cả adv và target
   note: cải tiến thêm quy trình lấy vùng như nào - tự nghĩ đi
   + Global: text-text encoder, image-image encoder
+
+--------------------------------------------------------------
+H10: concept based 
+
+
+Step-by-step
+1. Concept Decomposition
+Target: A brown dog playing with a colorful toy on the floor.
+Object concepts: g, toy, floor
+Attribute concepts: own fur, colorful
+Relation concept: playing with toy
+
+2. 
+
 
 
 
@@ -164,31 +200,107 @@ References:
     + Image-Local: Ảnh -> patch tokens -> encode -> vector
     + Text (Global): Text -> eos token -> encode -> vector
 
+  
+- Nhiều crop ước lượng gradient ổn định hơn -> ViT patch tokenization (chuyển đổi giữa text-image)
+- Gradient stability quan trọng hơn số lượng crop đơn thuần
+- Crop quá nhỏ  mất semantic context -> [0.5 - 1] 
+- crop để so semantic và update là khác nhau
+- 
+
+
 ### Design
 
 #### Hypothesis 1 
-
-#### Hypothesis 2
+#### Hypothesis 2 - Concept-token attention region attack (CARA) 
 Data
-  + create caption bank: Tạo ra ngân hàng positive và negative samples qua VLM captioning Qwen3-VL
-  + Concept selection: lọc chọn những concepts từ caption bank
+  + Tạo caption bank cho target, source: Tạo ra ngân hàng k positive qua VLM captioning Qwen3-VL
+  + Concept selection: lọc chọn những concepts từ caption bank (ưu tiên object) - đổi những object này trong caption sao cho tạo được mẫu khó trong model -> 5 negative captions 
+    - Dùng prompt theo paper: https://github.com/ExplainableML/finer/blob/main/train/generate_training_data/prompts/object_prompts.py
+
 Preprocessing:
-  + XAI extraction: 
+  + XAI extraction (2 cách chạy - cho tôi lựa chọn): dùng để chạy crop vùng ảnh theo phương pháp XAI ảnh để cập nhật nhiễu thay vì random crop 
     + Grad-ECLIP
-    + Attention map 
+    + Attention map (Theo Qwen3-VL)
 
-Encoder (CLIP):
-  + 3 model CLIP trong baseline của FOA Attack
+Encoder (CLIP): CLIP ViT-G/14, CLIP ViT-B/16, CLIP ViT-B/32
+  + Trong đó thì K target samples thì lấy 1 vectors gần mean vector của K nhất, normalize từng model feature
+  + cho hệ số của text và image cho từng vector
+  + concat embeddings của 3 models CLIP
 
-Loss function: dùng contrastive loss (đẩy source và adversarial ra xa và kéo adversarial và target gần lại)
+Loss function: Dùng contrastive loss theo InfoNCE với K negative samples 
+  + pull target vector và adversarial vector
+  + push K source vectors và adversarial vector
+
+Sequence: 
+  + 300 step thì cứ 30 step sẽ tăng size của ảnh crop lên, đến step cuối thì full size của ảnh ban đầu
+  + cứ 30 step thì chạy attention một lần và đo độ phân tán attention hoặc gradient (XAI)
+  + đến khi step 150 thì crop random thay vì XAI method  
+
+Contraint: 
+- Tôi có thể test trước 5 mẫu để đảm bảo nó chạy đúng và đánh giá đúng trước khi chạy 200 mẫu
+- Những phần nào lấy code thì dùng kỹ thuật giống như code của paper không được chế thông tin hay code thông tin ngoài (code, prompt, quy trình làm)
+
+
+### References:
+Attack:
+https://github.com/LiYuanBoJNU/MPCAttack
+https://github.com/VILA-Lab/M-Attack-V2
+https://github.com/jaehyun-kwak/SAGA
+
+
+concept-prompt:
+https://github.com/refkxh/BiCo/blob/main/bico/prompt_aug.py -> này ngon
+https://github.com/ExplainableML/finer/blob/main/train/generate_training_data/prompts/object_prompts.py
+https://github.com/j-min/DSG/blob/main/dsg/query_utils.py
+
+
+Concept-based papers:
+LG-CAV: Train Any Concept Activation Vector with Language Guidance
+https://proceedings.neurips.cc/paper_files/paper/2024/file/45d4924460c37853d57885d8af0b8d5c-Paper-Conference.pdf
+
+https://arxiv.org/pdf/2512.00713
+https://arxiv.org/pdf/2509.22755
+
+You are a visual semantic concept extractor.
+
+Task: Decompose the provided image caption into explicit, visually meaningful concepts.
+
+Rules:
+1. Use only information stated in the caption.
+2. Do not invent objects, properties, actions, or relationships.
+3. Extract entities, entity-attribute phrases, actions, spatial relations, and compositional clauses.
+4. Keep attribute-entity bindings intact (e.g., "red ball", not just "red").
+5. Preserve counting, negation, and which entity performs an action.
+6. Each concept should be independently interpretable and useful as a text description for a vision-language encoder.
+7. Avoid duplicates, generic words, and unsupported interpretations.
+8. Return valid JSON only, with English concept phrases.
+
+JSON schema:
+{
+  "objects": ["..."],
+  "attributes": ["..."],
+  "actions": ["..."],
+  "relations": ["..."],
+  "compositions": ["..."]
+}
+
+https://chatgpt.com/c/6ae0e299-1460-83ec-bc4a-87d783f3ba74
+
+Model caption ảnh: LLaVA-1.5-7B, InternVL3-8B, Qwen3-VL-8B, GPT-5 mini
+Config: 300 steps, epsilon=16/255, bước cập nhật 1/255, momentum 0.9, temperature 0.2, omega 2
+Stable Diffusion 1.5 img2img: strength=0.9, guidance=7.5, 40 steps, seed cố định
+
+
+## Temp:
+Loss: 
+dùng contrastive loss (đẩy source và adversarial ra xa và kéo adversarial và target gần lại)
 - Global loss: L_{semantic} = lamda_1 * L_{text-text} + lamda_1 * L{image-image}
   + Loss text-text: L_{text-text} = 1/k sim(text^{i}_tar, text^{i}_adv)
   + Loss image-image: L_{image-image} = 1/k sim(img^i_{tar}, img^{i}_adv)
-- Local loss: L_{local} = sim
-- Negative loss 
-=> dùng contrastive loss
+- Local loss: L_{local} = sim(v_{image})
 
-Sequence (3 version): 
+
+Sequence: 
   + Cập nhật global region ở dưới, local region ở trên - local region on global region in perturabtion update
     + Local regions (2 version) lấy theo vùng quan trọng từ XAI method ở trên
       + crop theo thông số như M-Attack
@@ -196,23 +308,84 @@ Sequence (3 version):
   + Chỉ dùng local region để cập nhật nhiễu
   + Chỉ dùng global region để cập nhật nhiễu
 
-Contraint: 
-- Tôi có thể test trước 5 mẫu để đảm bảo nó chạy đúng và đánh giá đúng trước khi chạy 200 mẫu
-- Những phần nào lấy code thì dùng kỹ thuật giống như code của paper không được chế thông tin hay code thông tin ngoài (code, prompt, quy trình làm)
 
-
-
+Cập nhật rule: Từ những lỗi đã tìm ra trong các thực nghiệm có thể rút ra insight thực nghiệm, liệt kê ra những kỹ thuật nào hiệu quả để dùng lại, 
+sau đó test những kỹ thuật nào có thể được áp dụng được vào làm giả thuyết để tối ưu attack (bạn có thể sáng tạo, tìm thêm phương pháp về nhiều lĩnh vực để tối ưu đặc biệt chú tâm vào các kỹ thuật về sâu bên trong model (các thành phần trong model VLM, CLIP như tokens, layers, attention map và các kỹ thuật mạnh khác trong XAI (concept-based, counterfactual)))
+và cập nhật rule check literature review trước khi chạy thực nghiệm và khi chạy xong hiệu quả thì đánh dấu vào bảng và lưu phần đó làm rồi để làm cơ sở cho các phần khác, tôi cần bạn thử nhiều kỹ thuật ở nhiều lĩnh vực để tối ưu các attack, cập nhật rule khi chạy xong thì ghi kết quả vào bảng google sheet, phân tích và ghi insight vào trong folder /docs/research/insights. 
+Quy trình sẽ là idea (search nhiều kỹ thuật hiệu quả như tôi nói) -> giả thuyết (khi ra giả thuyết thì ghi logic cách hoạt động có mẫu sẵn trong docs/research/kltn_attack_v6_cara.md vẽ thêm quy trình vào "Tổng quan kiến trúc và hình minh họa") -> check literature review -> chạy thực nghiệm nhỏ check hiệu quả (attack, caption, đánh giá) -> phân tích, lập bảng số liệu, ghi insights, hướng đi tiếp theo sửa cho tới khi chạy hiệu quả - quy chuẩn tối ưu theo các paper trước đó như MPC, M-Attack-V2 nhưng có thể sáng tạo thêm (preprocessing, data, hàm loss, model encoder, explanable AI) -> chạy thực nghiệm lớn (200 mẫu) khi thành công -> phân tích, insights --> thất bại thì chạy tiếp hypothesis tiếp theo. 
+Có thể chạy trên nhiều trình duyệt và nhiều accounts có thể thiết kế để tôi chạy giúp để nhanh chóng
 
 ### Hypothesis Insight
 - Text embedding làm loss tối ưu hơn chỉ dùng image embedding
+## Preprocessing
+### Attention map
+### Counterfactual
+### Concept
+Note những hướng đào tiếp:
+- concept trong không gian vision-language: https://papers.nips.cc/paper_files/paper/2025/hash/407106f4b56040b2e8dcad75a6e461e5-Abstract-Conference.html
+- Concept loại bỏ khiến vision-language caption thay đổi mạnh nhất: https://aclanthology.org/2025.emnlp-main.88/
 - 
 
-## Preprocessing (Augmentation hoặc )
-
-### Attention map
 
 
-### Counterfactual
+
+chỉnh lại logic dùng prompt:
+Task: Decompose the provided image caption into explicit, visually meaningful concepts.
+
+Rules:
+1. Use only information stated in the caption.
+2. Do not invent objects, properties, actions, or relationships.
+3. Extract entities, entity-attribute phrases, actions, spatial relations, and compositional clauses.
+4. Keep attribute-entity bindings intact (e.g., "red ball", not just "red").
+5. Preserve counting, negation, and which entity performs an action.
+6. Each concept should be independently interpretable and useful as a text description for a vision-language encoder.
+7. Avoid duplicates, generic words, and unsupported interpretations.
+8. Return valid JSON only, with English concept phrases.
+
+JSON schema:
+{
+  "objects": ["..."],
+  "attributes": ["..."],
+  "relations": ["..."],
+  "compositions": ["..."]
+}
+
+dùng prompt trên để concept decomposition, tách ra những concept quan trọng của caption, sau đó thay thế những concept này bằng word khác (dùng LLM Qwen) đổi những thứ trên, sau đó thay đổi những từ 
+không code dơ, dính chùm nhau
 
 
-### Concept
+venv --python 3.11.15 /marimo/v3_env
+source /marimo/v3_env/bin/activate
+
+cd /marimo/vlm_attack_v3/src/My-Attack-V3
+
+python -u generate_adversarial_examples_MPCAttack.py \
+  --cle_data_path "/marimo/datasets/resources/images/bigscale" \
+  --tgt_data_path "/marimo/datasets/resources/images/target_images" \
+  --output /marimo/outputs/v3_sample0 \
+  --device cuda:0 \
+  --batch_size 32 \
+  --num_samples 1 \
+  --start_index 0 \
+  --input_res 224 \
+  --clip_backbone B16 B32 Laion \
+  --ensemble True \
+  --crop_scale 0.5 0.9 \
+  --num_negatives 10 \
+  --steps 300 \
+  --epsilon 16 \
+  --alpha 1 \
+  --lam 0.6 \
+  --tau 0.2 \
+  --omega 2 \
+  --seed 2026 \
+  --save_every 30 \
+  --max_seconds 4500 
+
+
+| Parameter | Mặc định | Ý nghĩa |
+|---|---|---|
+| `--save_every` | `30` | Lưu checkpoint mỗi 30 updates; code còn lưu update 1 và bước cuối. |
+| `--max_seconds` | `4500` | Giới hạn toàn lần gọi CLI: **75 phút**, gồm chuẩn bị bank, load model, attack, chờ review và hậu xử lý. Không phải 75 phút cho mỗi ảnh. |
+| `--review_dir` | `<output>/reviews` | Thư mục đọc file review ở các điểm dừng bank, update 1 và complete. |
+| `--approved_plan` | Không có | Đường dẫn file ghi nhận approval. **Không tham gia thuật toán**, nhưng bản code hiện tại bắt buộc kiểm tra nó trước khi chạy. |
