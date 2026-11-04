@@ -1,0 +1,94 @@
+{
+  "algorithm_scope": "full original M-V2 four CLIP settings; two-pair partial author batch",
+  "auxiliary_provenance": "B32 offline top5 rerank diagnostic; global is same-pool control, not author B16 selection",
+  "evaluation": "not_included",
+  "model_revisions": {
+    "laion/CLIP-ViT-B-32-laion2B-s34B-b79K": "1a25a446712ba5ee05982a381eed697ef9b435cf",
+    "laion/CLIP-ViT-G-14-laion2B-s12B-b42K": "4b0305adc6802b2632e11cbe6606a9bdd43d35c9",
+    "openai/clip-vit-base-patch16": "57c216476eefef5ab752ec549e440a49ae4ae5f3",
+    "openai/clip-vit-base-patch32": "3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268"
+  },
+  "original_ata_fingerprint": "6eb1cb2b46b1c57844ed055e01ede03f9f55b30e254a01601ee42671c42055b6",
+  "original_release_bundle_sha256": "21a1d1de2b708eac9c856550a84e0aef88f1dbb5544af964592d3ac1a2a8a744",
+  "pairs": [
+    {
+      "index": 0,
+      "source": {
+        "path": "source/0.png",
+        "sha256": "3a928c42c01c6fafe680cf64746cc222dcf350a646e632940361ad9b1bc65419"
+      },
+      "stem": "0",
+      "target": {
+        "path": "target/0.jpg",
+        "sha256": "740dcbb95dbb4c1cdcafe42ce1b8608618c6393b57837ac4bebf1363e0f1dfb3"
+      },
+      "variants": {
+        "concept": [
+          {
+            "original_candidate_id": "4",
+            "path": "retrieval/concept/0/1.jpg",
+            "sha256": "2887ee1bf0bd30ec121d4de2ee7e9099db3e2329e721316ba2f337e1e06345ca"
+          },
+          {
+            "original_candidate_id": "3",
+            "path": "retrieval/concept/0/2.jpg",
+            "sha256": "30f923959938d96434f1b9cc8dccad9dcf635ec4788057de6e30ea51491cea75"
+          }
+        ],
+        "global": [
+          {
+            "original_candidate_id": "4",
+            "path": "retrieval/global/0/1.jpg",
+            "sha256": "2887ee1bf0bd30ec121d4de2ee7e9099db3e2329e721316ba2f337e1e06345ca"
+          },
+          {
+            "original_candidate_id": "3",
+            "path": "retrieval/global/0/2.jpg",
+            "sha256": "30f923959938d96434f1b9cc8dccad9dcf635ec4788057de6e30ea51491cea75"
+          }
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "source": {
+        "path": "source/1.png",
+        "sha256": "c5b21530082c4385d0ba4be3640acc1870dbb290bbf5833e7548b5089d2dbe50"
+      },
+      "stem": "1",
+      "target": {
+        "path": "target/1.jpg",
+        "sha256": "646da4f32fc9903a9e66838c58604bf6119e215812d21a2c50833cc2653c0fb6"
+      },
+      "variants": {
+        "concept": [
+          {
+            "original_candidate_id": "4",
+            "path": "retrieval/concept/1/1.jpg",
+            "sha256": "c176c72ebce7d8f9c5c7efc13f5b8e4901850970bbc687aa3bab9f38567960ee"
+          },
+          {
+            "original_candidate_id": "5",
+            "path": "retrieval/concept/1/2.jpg",
+            "sha256": "3e582e136c9ad9587a06eaabaecb20c00c99bccbf3c6d80faeeb15165fa70f2d"
+          }
+        ],
+        "global": [
+          {
+            "original_candidate_id": "4",
+            "path": "retrieval/global/1/1.jpg",
+            "sha256": "c176c72ebce7d8f9c5c7efc13f5b8e4901850970bbc687aa3bab9f38567960ee"
+          },
+          {
+            "original_candidate_id": "2",
+            "path": "retrieval/global/1/2.jpg",
+            "sha256": "116eadf8f6c5a657ccd91662a1e4dcda59942b5cdc2740213d1385866f386b19"
+          }
+        ]
+      }
+    }
+  ],
+  "schema": 1,
+  "threshold_primary": 0.5,
+  "threshold_secondary_legacy": 0.3
+}

@@ -16,8 +16,8 @@ from tqdm import tqdm
 
 from config_schema import MainConfig
 from negatives import NegativeBank, NegativeCaptionGenerator
-from utils import (atomic_write_json, ensure_dir, info_nce_loss, require_experiment_approval,
-                   save_image, verify_perturbation, wait_for_review, sample_seed, execution_deadline)
+from utils import (atomic_write_json, ensure_dir, info_nce_loss,
+                   save_image, verify_perturbation, sample_seed, execution_deadline)
 
 
 CLIP_BACKBONE_MAP = {
@@ -152,23 +152,7 @@ def build_negative_features(args, source_clip, negative_text, source_internvl, s
                       source_dino.expand(args.num_negatives, -1)], dim=1).detach()
 
 
-def postprocess_saved_images(args):
-    """Chain the same two editable evaluation scripts after saved-PNG verification."""
-    from blackbox_text_generation import generate_descriptions
-    descriptions = args.des_path_src_tgt or str(Path(args.output) / 'descriptions_src_tgt')
-    caption_args = argparse.Namespace(output=args.output, src_data_path=args.cle_data_path,
-        tgt_data_path=args.tgt_data_path, des_path_src_tgt=descriptions, model_name=args.model_name,
-        approved_plan=args.approved_plan, base_url=args.base_url, device=args.device)
-    generate_descriptions(caption_args)
-    if args.scorer_model:
-        from gpt_evaluate import main as evaluate
-        evaluate(argparse.Namespace(output=args.output, des_path_src_tgt=descriptions,
-            model_name=args.model_name, scorer_model=args.scorer_model, success_threshold=args.success_threshold,
-            approved_plan=args.approved_plan, base_url=args.base_url))
-
-
 def run_attack(args):
-    approval = require_experiment_approval(args.approved_plan)
 
     if args.batch_size != 1:
         raise ValueError('Use batch_size=1 so each image has its own negative bank')
@@ -183,8 +167,6 @@ def run_attack(args):
     
     deadline = time.time() + args.max_seconds
     ensure_dir(args.output)
-    review_dir = Path(args.review_dir or Path(args.output) / 'reviews')
-    ensure_dir(review_dir)
 
     # tranform function
     transform_fn = transforms.Compose([
@@ -206,7 +188,7 @@ def run_attack(args):
     source_indices = {path: index for index, (path, _) in enumerate(source_dataset.samples)}
     target_indices = {path: index for index, (path, _) in enumerate(target_dataset.samples)}
 
-    # Same model construction as MPC, deferred so caption-only resume loads no attack models.
+    # Defer model loading when a verified attack output already exists.
     models = None
     for source_path, target_path in pairs:
         if time.time() >= deadline:
@@ -214,7 +196,7 @@ def run_attack(args):
         sample_id = Path(source_path).stem
         sample_dir = Path(args.output) / 'checkpoints' / sample_id
         ensure_dir(sample_dir)
-        configuration = {'args': vars(args), 'approval': approval, 'source': source_path, 'target': target_path,
+        configuration = {'args': vars(args), 'source': source_path, 'target': target_path,
                          'source_sha256': hashlib.sha256(Path(source_path).read_bytes()).hexdigest(),
                          'target_sha256': hashlib.sha256(Path(target_path).read_bytes()).hexdigest()}
         complete_path = sample_dir / 'attack_complete.json'
@@ -225,12 +207,10 @@ def run_attack(args):
             complete = json.loads(complete_path.read_text(encoding='utf-8'))
             image_path = Path(complete['adversarial_path'])
             if hashlib.sha256(image_path.read_bytes()).hexdigest() != complete['image_sha256']:
-                raise ValueError('Saved adversarial PNG changed before post-processing resume')
-            postprocess_saved_images(args)
-            wait_for_review(review_dir, f'{sample_id}_complete', complete_path, deadline, complete=True)
+                raise ValueError('Saved adversarial PNG changed before completed-output reuse')
             continue
         if (sample_dir / 'attack_started.json').exists():
-            raise RuntimeError('This attack was already attempted; use saved outputs for post-processing')
+            raise RuntimeError('This attack was already attempted; preserve and inspect saved outputs')
         
         image_org, _, _ = source_dataset[source_indices[source_path]]
         image_tgt, _, _ = target_dataset[target_indices[target_path]]
@@ -241,40 +221,48 @@ def run_attack(args):
         save_image(image_tgt, sample_dir / 'target.png')
         atomic_write_json(sample_dir / 'config.json', configuration)
 
-        # Added: prepare and inspect the K-negative bank before optimization.
+        # prepare and inspect the K-negative bank before optimization.
         bank = prepare_negative_bank(args, image_org, source_path, target_path, sample_dir,
                                      seed=current_seed, deadline=deadline)
-        wait_for_review(review_dir, f'{sample_id}_data_bank', sample_dir / 'negative_bank.json', deadline)
         if models is None:
             models = load_models(args)
-        
+    
+
+
         clip_models, internvl_model, dino_model = models
         src_text = internvl_model.generate_description(image_org)
         tar_text = internvl_model.generate_description(image_tgt)
-        
+
         atomic_write_json(sample_dir / 'mpc_descriptions.json', {'source': src_text, 'target': tar_text})
         img_src, img_tgt = image_org.to(args.device), image_tgt.to(args.device)
         delta = (16 / 255 * torch.randn_like(image_org)).to(args.device).requires_grad_(True)
+        
         with torch.no_grad():
             text_feature_src = clip_models.get_text_features(src_text)
             text_feature_tar = clip_models.get_text_features(tar_text)
+            # encode 
             src_feats, tgt_feats = clip_models(img_src), clip_models(img_tgt)
             internvl_src = internvl_model(img_src).mean(dim=1).float()
             internvl_tgt = internvl_model(img_tgt).mean(dim=1).float()
             dino_src, dino_tgt = dino_model(img_src), dino_model(img_tgt)
+
+            # Combine the features into a single vector for each image.
             clip_src = torch.cat([args.lam * src_feats[index] + (1 - args.lam) * text_feature_src[index]
                                   for index in src_feats], dim=1)
             clip_tgt = torch.cat([args.lam * tgt_feats[index] + (1 - args.lam) * text_feature_tar[index]
                                   for index in tgt_feats], dim=1)
             z_src = torch.cat([clip_src, internvl_src, dino_src], dim=1)
             z_tgt = torch.cat([clip_tgt, internvl_tgt, dino_tgt], dim=1)
+            
             # Added: ten negative text features replace the single-source denominator.
             negative_text = clip_models.get_text_features(bank['negative_captions'])
             z_negatives = build_negative_features(args, src_feats, negative_text, internvl_src, dino_src)
+        
         torch.save({'target': z_tgt.cpu(), 'negatives': z_negatives.cpu()}, sample_dir / 'anchors.pt')
         atomic_write_json(sample_dir / 'attack_started.json', {'attempt': 1})
         momentum = torch.zeros_like(delta)
         history = []
+        
         for epoch in tqdm(range(args.steps), desc=f'Attack {sample_id}'):
             if time.time() >= deadline:
                 raise TimeoutError('Reviewed execution time limit exhausted')
@@ -296,6 +284,8 @@ def run_attack(args):
                 delta = torch.maximum(torch.minimum(delta, 255 - img_src), -img_src)
             delta = delta.detach().requires_grad_(True)
             step = epoch + 1
+            
+            
             record = {'step': step, 'negative_ce': float(loss.detach()), 'cross_entropy': float(-loss.detach()),
                       'source_similarity': float(F.cosine_similarity(z_adv.detach(), z_src).mean()),
                       'target_similarity': float(F.cosine_similarity(z_adv.detach(), z_tgt).mean()),
@@ -314,21 +304,14 @@ def run_attack(args):
                            checkpoint.with_suffix('.pt'))
             if step == 1:
                 save_image(local_cropped, sample_dir / 'actual_crop_step001.png')
-                wait_for_review(review_dir, f'{sample_id}_update1',
-                                sample_dir / 'step_001.json', deadline)
+        
         # Save/verify the PNG before any victim caption or GPT judgment.
         adv_path = Path(args.output) / 'img' / Path(source_path).parent.name / f'{sample_id}.png'
         save_image(img_src + delta, adv_path)
         verification = verify_perturbation(adv_path, image_org, args.epsilon)
         atomic_write_json(sample_dir / 'history.json', history)
         atomic_write_json(sample_dir / 'attack_complete.json', {**verification, 'official_asr': None,
-                          'caption_status': 'PENDING', 'adversarial_path': str(adv_path)})
-        postprocess_saved_images(args)
-        atomic_write_json(sample_dir / 'caption_complete.json', {'model_name': args.model_name,
-                          'judge': args.scorer_model, 'official_asr': None,
-                          'diagnostic_status': 'MANUAL_REVIEW_PENDING' if not args.scorer_model else 'ADAPTED_GPT_RUBRIC'})
-        # Inspect all seven required items before moving to the next source-target pair.
-        wait_for_review(review_dir, f'{sample_id}_complete', sample_dir / 'attack_complete.json', deadline, complete=True)
+                          'caption_status': 'NOT_RUN', 'evaluation_status': 'NOT_RUN', 'adversarial_path': str(adv_path)})
 
 
 def get_args(argv=None):
@@ -360,21 +343,16 @@ def get_args(argv=None):
     parser.add_argument('--tau', type=float, default=cfg.tau)
     parser.add_argument('--omega', type=float, default=cfg.omega)
     parser.add_argument('--seed', type=int, default=cfg.seed)
+    
     # Added: negative samples from the supplied notebook.
     parser.add_argument('--num_negatives', type=int, default=cfg.negative.num_negatives)
     parser.add_argument('--negative_model', default=cfg.negative.model_id)
     parser.add_argument('--negative_bank_path', default=cfg.negative.bank_path)
     parser.add_argument('--caption_attempts', type=int, default=cfg.negative.caption_attempts)
     parser.add_argument('--negative_retries', type=int, default=cfg.negative.negative_retries)
-    # Same standalone caption/judge scripts are also chained for approved runs.
-    parser.add_argument('--model_name', default=cfg.blackbox_open_source.model_name)
-    parser.add_argument('--des_path_src_tgt')
-    parser.add_argument('--scorer_model', default=None, help='Optional GPT judge; requires an approved API budget')
-    parser.add_argument('--success_threshold', type=float, default=.5)
-    parser.add_argument('--base_url')
+    
+    
     # Experiment audit; these do not modify MPC optimization.
-    parser.add_argument('--approved_plan')
-    parser.add_argument('--review_dir')
     parser.add_argument('--max_seconds', type=int, default=4500)
     parser.add_argument('--save_every', type=int, default=30)
     return parser.parse_args(argv)

@@ -1,0 +1,59 @@
+{
+  "run_id": "H1-readable-pilot-PENDING",
+  "approval": {
+    "status": "pending",
+    "plan": "experiments/hypothesis_01_autopipeline_plan.md"
+  },
+  "variants": [
+    "global",
+    "concept"
+  ],
+  "attack": {
+    "steps": 300,
+    "epsilon": 16,
+    "seed": 2023,
+    "alpha": 0.005,
+    "budget_seconds_per_variant": 3600
+  },
+  "caption": {
+    "model": "qwen",
+    "revision": "66285546d2b821cf421d4f5eb2576359d3770cd3",
+    "dtype": "float16",
+    "device": "cuda",
+    "budget_seconds": 1800
+  },
+  "evaluation": {
+    "mode": "caption_diagnostic",
+    "term_map": {
+      "0": {
+        "target_words": [
+          "dog",
+          "dogs",
+          "puppy",
+          "puppies",
+          "canine",
+          "terrier"
+        ],
+        "source_words": [
+          "panda",
+          "pandas"
+        ]
+      },
+      "1": {
+        "target_words": [
+          "skier",
+          "skiers",
+          "skiing",
+          "skis"
+        ],
+        "source_words": [
+          "canal",
+          "canals",
+          "venice",
+          "waterway",
+          "waterways"
+        ]
+      }
+    }
+  }
+}

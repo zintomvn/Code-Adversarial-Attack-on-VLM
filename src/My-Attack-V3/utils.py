@@ -183,6 +183,7 @@ def info_nce_loss(feat_adv, feat_tgt, feat_src, temperature=0.2, mode='img', ome
         raise ValueError('Expected matching query/positive [B,D] tensors')
     if feat_src.ndim != 2 or not len(feat_src) or feat_src.shape[-1] != feat_adv.shape[-1]:
         raise ValueError('Expected negative anchors [K,D]')
+    
     query = F.normalize(feat_adv, dim=-1)
     positive = F.normalize(feat_tgt.detach(), dim=-1)
     negatives = F.normalize(feat_src.detach(), dim=-1)

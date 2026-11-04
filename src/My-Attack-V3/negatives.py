@@ -430,6 +430,7 @@ class NegativeBank:
             new_objects = _split_objects_phrase(new_phrase)
             valid = _validate_single_replacement(phrase, new_phrase, index, caption)
 
+
             new_item = new_objects[index - 1] if len(new_objects) >= index else None
             changed = self.reconstruct_caption(caption, objects[index - 1], new_item) if valid else None
             key = ' '.join(changed.casefold().split()) if changed else ''
@@ -459,6 +460,7 @@ class NegativeBank:
             source = self.generate_captions(source_image)
             objects = [self.extract_objects(caption) for caption in source]
             forbidden = {' '.join(c.casefold().split()) for c in source}
+            
             negatives = []
             for record in objects:
                 negative = self.generate_negative(record, forbidden)

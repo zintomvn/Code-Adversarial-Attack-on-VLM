@@ -1,0 +1,4 @@
+# Host-side runner only. The attack installs its frozen Python 3.10 environment.
+numpy==2.2.6
+Pillow==11.3.0
+uv==0.8.22

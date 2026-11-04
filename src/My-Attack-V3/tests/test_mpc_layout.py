@@ -58,7 +58,7 @@ class LayoutTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             match_source_target_paths(source, ['1/2.jpg'])
 
-    def test_synthetic_mpc_loop_saves_png_before_caption_review(self):
+    def test_synthetic_mpc_loop_saves_png_without_evaluation(self):
         import numpy as np
         from PIL import Image
         import generate_adversarial_examples_MPCAttack as attack
@@ -84,11 +84,9 @@ class LayoutTests(unittest.TestCase):
                                                ('target/1', (180, 40, 50), 'jpg')]:
                 (root / folder).mkdir(parents=True)
                 Image.new('RGB', (16, 16), color).save(root / folder / f'0.{extension}')
-            plan = root / 'synthetic-plan.md'
-            plan.write_text('APPROVED synthetic-only unit test; no pretrained inference')
             args = attack.get_args([
                 '--cle_data_path', str(root / 'source'), '--tgt_data_path', str(root / 'target'),
-                '--output', str(root / 'output'), '--approved_plan', str(plan),
+                '--output', str(root / 'output'),
                 '--device', 'cpu', '--input_res', '16', '--num_samples', '1', '--steps', '2', '--save_every', '1'])
             bank = {'negative_captions': [f'counterfactual {i}' for i in range(10)]}
 
@@ -102,21 +100,17 @@ class LayoutTests(unittest.TestCase):
                     self.assertTrue((root / 'output/img/nips17/0.png').exists())
                 return {'status': 'PASS'}
 
-            def postprocess_saved(args):
-                self.assertTrue((root / 'output/img/nips17/0.png').exists())
-
             with patch.object(attack, 'load_models', return_value=(Clip(), InternVL(),
                  lambda image: F.normalize(image.mean(dim=(-1, -2)), dim=-1))), \
-                 patch.object(attack, 'prepare_negative_bank', side_effect=prepare), \
-                 patch.object(attack, 'postprocess_saved_images', side_effect=postprocess_saved) as postprocess, \
-                 patch.object(attack, 'wait_for_review', side_effect=inspect):
+                 patch.object(attack, 'prepare_negative_bank', side_effect=prepare):
                 attack.set_seed(2026)
                 attack.run_attack(args)
-                postprocess.assert_called_once_with(args)
             output = root / 'output'
             complete = json.loads((output / 'checkpoints/0/attack_complete.json').read_text())
             self.assertLessEqual(complete['saved_png_linf'], 16)
             self.assertIsNone(complete['official_asr'])
+            self.assertEqual(complete['caption_status'], 'NOT_RUN')
+            self.assertFalse((output / 'checkpoints/0/caption_complete.json').exists())
             history = json.loads((output / 'checkpoints/0/history.json').read_text())
             self.assertEqual(len(history), 2)
             self.assertEqual(history[0]['negative_shape'], [10, 9])
@@ -124,9 +118,7 @@ class LayoutTests(unittest.TestCase):
             self.assertTrue((output / 'checkpoints/0/actual_crop_step001.png').exists())
             original_png = (output / 'img/nips17/0.png').read_bytes()
             with patch.object(attack, 'load_models', side_effect=AssertionError('Attack models reloaded')), \
-                 patch.object(attack, 'prepare_negative_bank', side_effect=AssertionError('Bank regenerated')), \
-                 patch.object(attack, 'postprocess_saved_images', side_effect=postprocess_saved), \
-                 patch.object(attack, 'wait_for_review', side_effect=inspect):
+                 patch.object(attack, 'prepare_negative_bank', side_effect=AssertionError('Bank regenerated')):
                 attack.run_attack(args)
             self.assertEqual((output / 'img/nips17/0.png').read_bytes(), original_png)
 
@@ -136,7 +128,9 @@ class LayoutTests(unittest.TestCase):
         self.assertEqual(args.num_negatives, 10)
         self.assertEqual(args.steps, 300)
         self.assertEqual(args.clip_backbone, ['B16', 'B32', 'Laion'])
-        self.assertIsNone(args.approved_plan)
+        self.assertFalse(hasattr(args, 'approved_plan'))
+        for name in ('model_name', 'scorer_model', 'des_path_src_tgt', 'success_threshold', 'base_url'):
+            self.assertFalse(hasattr(args, name), name)
 
     def test_mpc_boolean_flag_spelling_and_l336_remain_available(self):
         from generate_adversarial_examples_MPCAttack import get_args

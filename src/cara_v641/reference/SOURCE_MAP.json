@@ -1,0 +1,74 @@
+{
+  "data": {
+    "cells": [
+      7
+    ],
+    "initial_extraction_sha256": "8d9fbd80c228395130c5e728fc303c5e7079c4a77bae59a231693238c1ec5d23",
+    "note": "Initial one-time extraction identity, before revision pinning and audit callbacks; actual final file hashes are in packaged SHA256SUMS.json."
+  },
+  "finer": {
+    "cells": [
+      10,
+      12,
+      14
+    ],
+    "initial_extraction_sha256": "8b61453bf73b7f6f0a3420aed47ae8575f590bd0082ec55ea2e74d11ab3e5e15",
+    "note": "Initial one-time extraction identity, before revision pinning and audit callbacks; actual final file hashes are in packaged SHA256SUMS.json."
+  },
+  "regions": {
+    "cells": [
+      16
+    ],
+    "initial_extraction_sha256": "369e6189325e2c8bdd0035c02707145a8d239a1255730d07611066c42bf52840",
+    "note": "Initial one-time extraction identity, before revision pinning and audit callbacks; actual final file hashes are in packaged SHA256SUMS.json."
+  },
+  "grad_eclip": {
+    "cells": [
+      18,
+      20
+    ],
+    "initial_extraction_sha256": "3c4cd3ef09d7fe0ebdec428e99cbd59eda2fb2c581b26d2ad820498f1e3e39e6",
+    "note": "Initial one-time extraction identity, before revision pinning and audit callbacks; actual final file hashes are in packaged SHA256SUMS.json."
+  },
+  "attention": {
+    "cells": [
+      22,
+      24
+    ],
+    "initial_extraction_sha256": "8eb3f7ecd46791755e7c498714597567c3fde3e87053ac20d635605fbab1693e",
+    "note": "Initial one-time extraction identity, before revision pinning and audit callbacks; actual final file hashes are in packaged SHA256SUMS.json."
+  },
+  "models": {
+    "cells": [
+      27,
+      29,
+      31,
+      33,
+      35
+    ],
+    "initial_extraction_sha256": "0d1322f77f63cb95dd53cadc5772878a561c0aa29ac526219252cf753a3d7894",
+    "note": "Initial one-time extraction identity, before revision pinning and audit callbacks; actual final file hashes are in packaged SHA256SUMS.json."
+  },
+  "losses": {
+    "cells": [
+      38,
+      40
+    ],
+    "initial_extraction_sha256": "8d6aa53aa1d655f7cb5edfb7819e515790566e4b057658189baeb1c25f238d7d",
+    "note": "Initial one-time extraction identity, before revision pinning and audit callbacks; actual final file hashes are in packaged SHA256SUMS.json."
+  },
+  "attack": {
+    "cells": [
+      43
+    ],
+    "initial_extraction_sha256": "8685cd0c93eaa3316a8471ff07abda2e38358a195598de92a8fffef461e67d37",
+    "note": "Initial one-time extraction identity, before revision pinning and audit callbacks; actual final file hashes are in packaged SHA256SUMS.json."
+  },
+  "visualization": {
+    "cells": [
+      49
+    ],
+    "initial_extraction_sha256": "c012e3ca078f4ad4a7674a122f2d01415a7233654f11309ab32caa97d4677a16",
+    "note": "Initial one-time extraction identity, before revision pinning and audit callbacks; actual final file hashes are in packaged SHA256SUMS.json."
+  }
+}

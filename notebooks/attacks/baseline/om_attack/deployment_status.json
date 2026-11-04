@@ -1,5 +1,5 @@
 {
-  "checked_at_local": "2026-10-23T00:31:08.540687+07:00",
+  "checked_at_local": "2026-10-24T20:08:32.669426+07:00",
   "run_name": "official_om_n200_e16_s300_v4",
   "notebook_url": "https://molab.marimo.io/notebooks/nb_NRE5b1ieMbBcgmP6pPV2HZ",
   "bundle_sha256": "21a1d1de2b708eac9c856550a84e0aef88f1dbb5544af964592d3ac1a2a8a744",
@@ -14,11 +14,11 @@
   "drive_connected_in_v4": true,
   "controller_started_in_v4": true,
   "v4_confirmed_completed": {
-    "o_attack": 1,
-    "m_attack_v2": 10
+    "o_attack": 200,
+    "m_attack_v2": 200
   },
   "v4_gpu_clip_regression_verified": true,
-  "evaluation_started_in_v4": false,
+  "evaluation_started_in_v4": true,
   "current_blocker": null,
   "local_verification": {
     "command": "python notebooks/attacks/baseline/om_attack/verify_release.py",
@@ -39,12 +39,13 @@
     "sandbox_error": "exceeded 8388613 byte http.MaxBytesReader limit"
   },
   "pending": [
-    "Complete the remaining 200-sample campaign, resuming after session expiry as needed.",
-    "Run the configured VLM and GPT-score evaluation after both attacks complete."
+    "Finish evaluation for LLaVA, InternVL and GPT-5 mini.",
+    "Retry incomplete model outputs once using the unchanged protocol; persistent failures remain pending.",
+    "Gemini remains pending until GEMINI_API_KEY is available."
   ],
   "drive_folder_url": "https://drive.google.com/drive/folders/13bB-pBlCpevcn3rn2qdWXiLEDRHUrQQ2",
-  "controller_pid_at_launch": 4126,
-  "last_observed_stage": "attacking o_attack, full campaign after verified author batches",
+  "controller_pid_at_launch": 630,
+  "last_observed_stage": "evaluating LLaVA-1.5-7B",
   "openai_key_loaded_privately": true,
   "retrieval_recovered_bytes": 65875825,
   "gpu_reported_vram_mib": 97887,
@@ -61,5 +62,18 @@
     "m_attack_v2": true
   },
   "controller_alive_at_last_check": true,
-  "gpu_utilization_percent_at_last_check": 100
+  "gpu_utilization_percent_at_last_check": 100,
+  "evaluation_resume": {
+    "saved_qwen_pairs_complete": 400,
+    "saved_gpt_mini_scores_before_resume": 160,
+    "llava_captions_ok_at_check": 598,
+    "llava_scores_ok_at_check": 88,
+    "llava_truncated_captions_at_check": 1,
+    "internvl_config_processor_preflight_passed": true,
+    "followup_pid": 2746,
+    "followup_max_retries_per_incomplete_model": 1,
+    "caption_token_limit_changed": false,
+    "protocol_changed": false,
+    "evidence_report": "evaluation_resume_2026-10-24.json"
+  }
 }

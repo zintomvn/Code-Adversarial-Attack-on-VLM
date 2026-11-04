@@ -1,8 +1,4 @@
-# My-Attack-V3 — cấu trúc giống MPCAttack
-
-Giữ cách tổ chức của `src/MPCAttack/`: attack, sinh caption, rồi chấm điểm là ba script độc lập. Phần bổ sung là **10 negative captions** bằng cách thay đúng một object của caption source trong notebook v6.4.1. Model weights frozen; vòng lặp attack chỉ tối ưu ảnh.
-
-Hướng dẫn clone, cài môi trường và chạy bằng `python` trên Molab: [RUN_MOLAB.md](RUN_MOLAB.md).
+# My-Attack
 
 ```text
 My-Attack-V3/
@@ -22,14 +18,14 @@ My-Attack-V3/
 
 ## Đọc và sửa code
 
-| File | Đối chiếu MPC | Nơi cần sửa |
-|---|---|---|
-| `config_schema.py` | DataConfig, OptimConfig, ModelConfig, MainConfig | Default paths, số mẫu, steps, epsilon, encoder; thêm NegativeConfig mặc định10 |
-| `generate_adversarial_examples_MPCAttack.py` | `get_args → main → run_attack`, ImageFolderWithPaths, build_clip_models, extract_feature | Vòng lặp crop → feature → loss → gradient → MI-FGSM nằm trực tiếp trong file |
-| `negatives.py` | Phần bổ sung từ notebook bạn đưa | Prompt, tách object, thay một object, lọc trùng, sinh/cache bank |
-| `utils.py` | Cùng vai trò utils của MPC | `info_nce_loss`, lưu PNG, verify epsilon, file caption và helpers |
-| `blackbox_text_generation.py` | ImageDescriptionGenerator, generate_descriptions, get_args/main | Prompt caption, model victim, decoding, text output và cache từng ảnh |
-| `gpt_evaluate.py` | GPTScorer, read_descriptions, save_scores, get_args/main | Rubric MPC, threshold0.5, targeted/untargeted scores |
+| File                                         | Đối chiếu MPC                                                                            | Nơi cần sửa                                                                    |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `config_schema.py`                           | DataConfig, OptimConfig, ModelConfig, MainConfig                                         | Default paths, số mẫu, steps, epsilon, encoder; thêm NegativeConfig mặc định10 |
+| `generate_adversarial_examples_MPCAttack.py` | `get_args → main → run_attack`, ImageFolderWithPaths, build_clip_models, extract_feature | Vòng lặp crop → feature → loss → gradient → MI-FGSM nằm trực tiếp trong file   |
+| `negatives.py`                               | Phần bổ sung từ notebook bạn đưa                                                         | Prompt, tách object, thay một object, lọc trùng, sinh/cache bank               |
+| `utils.py`                                   | Cùng vai trò utils của MPC                                                               | `info_nce_loss`, lưu PNG, verify epsilon, file caption và helpers              |
+| `blackbox_text_generation.py`                | ImageDescriptionGenerator, generate_descriptions, get_args/main                          | Prompt caption, model victim, decoding, text output và cache từng ảnh          |
+| `gpt_evaluate.py`                            | GPTScorer, read_descriptions, save_scores, get_args/main                                 | Rubric MPC, threshold0.5, targeted/untargeted scores                           |
 
 Các block `# Added:` trong file attack đánh dấu negative samples. Giữ CLIP B16/B32/Laion + InternVL3-1B + DINOv2, fusion image/text0.6/0.4, random crop và MI-FGSM. Negative anchors giữ image source ở mọi encoder; chỉ thay phần text CLIP bằng caption counterfactual. Maximize negative CE với một positive và K negatives như chiều tối ưu MPC; K1 khớp objective gốc.
 
@@ -52,14 +48,19 @@ Các ví dụ thực thi dưới đây dùng **plan đã được user duyệt c
 
 ```bash
 python generate_adversarial_examples_MPCAttack.py \
-  --cle_data_path /data/images/bigscale \
-  --tgt_data_path /data/images/target_images \
-  --output /outputs/My-Attack-V3 \
-  --num_samples 2 --num_negatives 10 --steps 300 \
-  --approved_plan /path/to/reviewed-and-approved-plan.md
+  --cle_data_path /marimo/datasets/resources/images/bigscale \
+  --tgt_data_path /marimo/datasets/resources/images/target_images \
+  --output /outputs/n200_negatives \
+  --num_samples 200 --start_index 0 --batch_size 1 \
+  --input_res 224 --crop_scale 0.5 0.9 \
+  --clip_backbone B16 B32 Laion --ensemble True \
+  --steps 300 --epsilon 16 --alpha 1 \
+  --num_negatives 10 --seed 2023 \
+  --lam 0.6 --tau 0.2 --omega 2 \
+  --save_every 30 --max_seconds 86400
 ```
 
-File attack tự gọi `blackbox_text_generation.generate_descriptions` sau saved-PNG verification, rồi gọi `gpt_evaluate.main` nếu có `--scorer_model` và budget judge trong plan. Mặc định không gọi API judge; caption diagnostic được review riêng trước khi tiếp tục. Logic hai bước này vẫn nằm trong hai file độc lập như MPC, có thể chỉnh hoặc chạy lại trên PNG đã lưu mà không attack lại.
+Attack saves and verifies adversarial PNGs only. Run blackbox_text_generation.py and gpt_evaluate.py separately; neither is called by the attack.
 
 Script chờ review sau bank, sau update1 và sau hậu xử lý của từng mẫu. Reviewer phải ghi đủ7mục trước khi chuyển sang mẫu tiếp theo. Chạy riêng script caption cho PNG có sẵn:
 
@@ -69,8 +70,7 @@ python blackbox_text_generation.py \
   --src_data_path /data/images/bigscale \
   --tgt_data_path /data/images/target_images \
   --des_path_src_tgt /outputs/clean_descriptions \
-  --model_name Qwen2.5-VL-3B-Instruct \
-  --approved_plan /path/to/reviewed-and-approved-plan.md
+  --model_name Qwen2.5-VL-3B-Instruct
 ```
 
 Chấm điểm GPT chỉ khi scope/budget API của plan đã được duyệt:
@@ -80,13 +80,12 @@ python gpt_evaluate.py \
   --output /outputs/My-Attack-V3 \
   --des_path_src_tgt /outputs/clean_descriptions \
   --model_name Qwen2.5-VL-3B-Instruct \
-  --scorer_model gpt-4o-mini --success_threshold 0.5 \
-  --approved_plan /path/to/reviewed-and-approved-plan.md
+  --scorer_model gpt-4o-mini --success_threshold 0.5
 ```
 
 Kết quả rubric caption là diagnostic theo MPC, không tự gắn nhãn official ASR đã xác minh. API keys dùng environment hoặc `api_keys.yaml/json`; endpoint tùy chọn qua `--base_url`, không hardcode proxy.
 
-Nếu hậu xử lý bị ngắt sau khi đã có `attack_complete.json`, chạy lại cùng config/plan sẽ kiểm tra hash PNG và chỉ tiếp tục caption/evaluation còn thiếu; không load lại attack models hay tối ưu lại ảnh. Attack bị ngắt giữa chừng vẫn được giữ riêng, không tự retry từ đầu.
+Reusing a completed attack verifies the saved PNG hash and waits for review; it does not run captioning, judging or optimization again.
 
 ## Output giống MPC
 

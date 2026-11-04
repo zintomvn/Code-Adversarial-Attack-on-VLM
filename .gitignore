@@ -13,3 +13,14 @@ __pycache__/
 .env.*
 !.env.example
 .ruff_cache/
+/datasets/
+
+
+experiments/
+molab/
+docs/research/hypo
+docs/research/context
+docs/research/insights
+docs
+
+tests/

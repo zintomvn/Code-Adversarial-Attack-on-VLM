@@ -285,6 +285,21 @@ output: tạo cho tôi 1 notebook kltn_v3_attention.ipynb
 
 
 ------------------------------------------------------------------------------------------------------------
+
+## Chạy thực nghiệm smoke test 
+
+Chạy cho tôi notebook thực nghiệm kltn-attack-v6.4.1-cara.ipynb trên molab 2 mẫu
+thêm cho tôi phần chạy caption của 4 models (LLaVA, InternVL, Qwen3-VL, GPT-5 mini), chạy đánh giá trên gpt-4o (như trong code của các paper trong folder src - MPC Attack, M-Attack-V2)
+api key của openai của tôi để trong file .env, đặt sẵn file zip để tôi tải về phân tích
+
+
+## Phân tích 
+
+
+## Chạy thực nghiệm 200 mẫu
+
+
+------------------------------------------------------------------------------------------------------------
 # MILESTONE 4
 ## Prompt:
 

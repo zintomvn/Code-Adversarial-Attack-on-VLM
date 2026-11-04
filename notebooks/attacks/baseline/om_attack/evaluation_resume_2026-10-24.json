@@ -1,0 +1,30 @@
+{
+  "checked_at_utc": "2026-10-24T13:09:35.516165+00:00",
+  "run_name": "official_om_n200_e16_s300_v4",
+  "stage": {
+    "stage": "evaluating",
+    "updated_unix": 1792846471.303403,
+    "model": "LLaVA-1.5-7B"
+  },
+  "controller": {
+    "pid": 630,
+    "start_ticks": "55360"
+  },
+  "attack_samples": {
+    "o_attack": 200,
+    "m_attack_v2": 200
+  },
+  "local_evaluation_state": [
+    {
+      "model": "LLaVA-1_5-7B",
+      "captions_ok": 598,
+      "captions_errors": 1,
+      "scores_ok": 88,
+      "scores_errors": 0
+    }
+  ],
+  "protocol_sha256": "bef7693aa3a84a10b5e12196996134a03d620cb3fbacfbace1fffaf73a7b8e72",
+  "official_author_files_verified": 35,
+  "bounded_retry_helper_sha256": "f59c8f980debc7f6d6a4e5033a5bd5e98b23a1b2690b4b7b94389717c23f5986",
+  "configuration_changed": false
+}
